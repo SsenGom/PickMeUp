@@ -1,0 +1,216 @@
+/**
+ * 비공개 페이지 레이아웃
+ * 
+ * 로그인한 사용자만 접근 가능한 페이지의 공통 레이아웃
+ * - 사이드바 (네비게이션)
+ * - 헤더 (알림, 모바일 메뉴)
+ * - 메인 콘텐츠 영역 (<Outlet />)
+ * 
+ * 반응형 디자인:
+ * - 데스크톱: 사이드바 항상 표시
+ * - 모바일: 햄버거 메뉴로 사이드바 토글
+ * 
+ * <Outlet />:
+ * React Router의 중첩 라우트에서 자식 컴포넌트가 렌더링되는 위치
+ * 
+ * 구조:
+ * <PrivateLayout>        ← 이 컴포넌트
+ *   <Sidebar />
+ *   <Header />
+ *   <main>
+ *     <Outlet />         ← 여기에 DashboardPage, TasksPage 등 렌더링
+ *   </main>
+ * </PrivateLayout>
+ */
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/stores/authStore'
+import { useQuery } from '@tanstack/react-query'
+import api from '@/lib/api'
+import {
+  LayoutDashboard,
+  Calendar,
+  CheckSquare,
+  Star,
+  Mail,
+  FileText,
+  Settings,
+  LogOut,
+  Bell,
+  Menu,
+  X,
+  Briefcase,
+} from 'lucide-react'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
+
+/**
+ * 네비게이션 아이템 정의
+ * 
+ * 배열로 정의하면 map으로 렌더링 → 코드 중복 감소
+ */
+const navItems = [
+  { to: '/', icon: LayoutDashboard, label: '대시보드' },
+  { to: '/calendar', icon: Calendar, label: '캘린더' },
+  { to: '/jobs', icon: Briefcase, label: '취업관리' },
+  { to: '/tasks', icon: CheckSquare, label: '할 일' },
+  { to: '/important-dates', icon: Star, label: '중요일' },
+  { to: '/inbox', icon: Mail, label: '메시지' },
+  { to: '/resume/edit', icon: FileText, label: '이력서' },
+  { to: '/settings', icon: Settings, label: '설정' },
+]
+
+export default function PrivateLayout() {
+  // 모바일 사이드바 열림 상태
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  
+  // 전역 인증 상태에서 사용자 정보와 로그아웃 함수
+  const { user, logout } = useAuthStore()
+  const navigate = useNavigate()
+
+  /**
+   * 읽지 않은 메시지 개수 조회
+   * 
+   * refetchInterval: 30초마다 자동 재조회 (실시간성)
+   * 
+   * 새 메시지 알림에 사용
+   */
+  const { data: unreadCount } = useQuery({
+    queryKey: ['unreadCount'],
+    queryFn: async () => {
+      const { data } = await api.get('/inbox/unread-count')
+      return data.data as number
+    },
+    refetchInterval: 30000,  // 30초마다 폴링
+  })
+
+  /**
+   * 로그아웃 처리
+   */
+  const handleLogout = () => {
+    logout()              // Zustand 상태 초기화 + localStorage 삭제
+    navigate('/login')    // 로그인 페이지로 이동
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* ========== 모바일 사이드바 배경 (오버레이) ========== */}
+      {/* 사이드바 열렸을 때만 표시, 클릭하면 닫힘 */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* ========== 사이드바 ========== */}
+      <aside
+        className={cn(
+          'fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-lg transform transition-transform',
+          'lg:translate-x-0',  // 데스크톱: 항상 표시
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'  // 모바일: 토글
+        )}
+      >
+        {/* 사이드바 헤더 */}
+        <div className="flex items-center justify-between h-16 px-4 border-b">
+          <h1 className="text-xl font-bold text-primary-600">PickMeUp</h1>
+          {/* 모바일에서만 닫기 버튼 표시 */}
+          <button className="lg:hidden" onClick={() => setSidebarOpen(false)}>
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* 네비게이션 메뉴 */}
+        <nav className="p-4 space-y-1">
+          {navItems.map(({ to, icon: Icon, label }) => (
+            /**
+             * NavLink: 현재 경로와 일치하면 isActive가 true
+             * 
+             * 활성 상태에 따라 다른 스타일 적용
+             */
+            <NavLink
+              key={to}
+              to={to}
+              onClick={() => setSidebarOpen(false)}  // 모바일에서 클릭 시 사이드바 닫기
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors',
+                  isActive
+                    ? 'bg-primary-50 text-primary-600'   // 활성 상태
+                    : 'text-gray-600 hover:bg-gray-100'  // 비활성 상태
+                )
+              }
+            >
+              <Icon className="w-5 h-5" />
+              <span>{label}</span>
+              {/* 메시지 메뉴에 읽지 않은 개수 뱃지 */}
+              {to === '/inbox' && unreadCount && unreadCount > 0 && (
+                <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* 사이드바 푸터 (사용자 정보 + 로그아웃) */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
+          {/* 사용자 정보 */}
+          <div className="flex items-center gap-3 mb-3">
+            {/* 프로필 아바타 (이름 첫 글자) */}
+            <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+              <span className="text-primary-600 font-medium">
+                {user?.name?.charAt(0)}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium truncate">{user?.name}</p>
+              <p className="text-sm text-gray-500 truncate">{user?.email}</p>
+            </div>
+          </div>
+          {/* 로그아웃 버튼 */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 w-full px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>로그아웃</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* ========== 메인 콘텐츠 영역 ========== */}
+      {/* lg:pl-64: 데스크톱에서 사이드바 너비만큼 왼쪽 패딩 */}
+      <div className="lg:pl-64">
+        {/* 헤더 */}
+        <header className="sticky top-0 z-30 bg-white shadow-sm">
+          <div className="flex items-center justify-between h-16 px-4">
+            {/* 모바일 햄버거 메뉴 버튼 */}
+            <button
+              className="lg:hidden"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+
+            <div className="flex-1" />
+
+            {/* 알림 버튼 */}
+            <button className="relative p-2 hover:bg-gray-100 rounded-full">
+              <Bell className="w-6 h-6 text-gray-600" />
+              {/* 읽지 않은 메시지 있으면 빨간 점 표시 */}
+              {unreadCount && unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+              )}
+            </button>
+          </div>
+        </header>
+
+        {/* 페이지 콘텐츠 */}
+        {/* <Outlet />: 자식 라우트의 컴포넌트가 여기에 렌더링됨 */}
+        <main className="p-4 lg:p-6">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: pickmeup-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: pickmeup
+      MYSQL_USER: pickmeup
+      MYSQL_PASSWORD: pickmeup123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  mongodb:
+    image: mongo:7.0
+    container_name: pickmeup-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: pickmeup
+      MONGO_INITDB_ROOT_PASSWORD: pickmeup123
+      MONGO_INITDB_DATABASE: pickmeup
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: pickmeup-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mysql-data:
+  mongodb-data:
+  redis-data:

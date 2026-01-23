@@ -1,0 +1,77 @@
+# =====================
+# Compiled / Build
+# =====================
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# =====================
+# Logs
+# =====================
+*.log
+logs/
+log/
+
+# =====================
+# IDE
+# =====================
+.idea/
+*.iml
+*.iws
+.vscode/
+
+# =====================
+# Gradle / Maven
+# =====================
+.gradle/
+build/
+out/
+target/
+!gradle/wrapper/gradle-wrapper.jar
+
+# =====================
+# Node / React
+# =====================
+node_modules/
+dist/
+.next/
+.vite/
+
+# =====================
+# Spring Boot secrets
+# =====================
+src/main/resources/application-*.yml
+src/main/resources/application-*.yaml
+
+# =====================
+# Environment
+# =====================
+.env
+.env.local
+.env.*.local
+
+# =====================
+# Local DB / Data
+# =====================
+*.db
+*.sqlite
+data/
+
+# =====================
+# OS
+# =====================
+.DS_Store
+Thumbs.db
+
+# =====================
+# Docker
+# =====================
+docker/data/
+
+# =====================
+# Jenkins
+# =====================
+.jenkins/

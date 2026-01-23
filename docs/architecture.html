@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PickMeUp 아키텍처</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8 min-h-screen">
+  <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">PickMeUp 프로젝트 아키텍처</h1>
+  
+  <!-- 전체 시스템 구조 -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">1. 전체 시스템 구조</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <!-- Browser -->
+      <div class="bg-blue-100 rounded-lg p-4 mb-4 text-center">
+        <span class="font-semibold text-blue-800">👤 사용자 (Browser)</span>
+      </div>
+      
+      <div class="flex justify-center mb-4">
+        <div class="w-0.5 h-8 bg-gray-400"></div>
+      </div>
+      
+      <!-- Frontend -->
+      <div class="bg-green-100 rounded-lg p-4 mb-4">
+        <div class="text-center font-semibold text-green-800 mb-3">
+          🖥️ Frontend (React + Vite) - localhost:3000
+        </div>
+        <div class="grid grid-cols-4 gap-2">
+          <div class="bg-green-200 rounded p-2 text-center text-sm">로그인</div>
+          <div class="bg-green-200 rounded p-2 text-center text-sm">대시보드</div>
+          <div class="bg-green-200 rounded p-2 text-center text-sm">캘린더</div>
+          <div class="bg-green-200 rounded p-2 text-center text-sm">할일</div>
+          <div class="bg-green-200 rounded p-2 text-center text-sm">중요일</div>
+          <div class="bg-green-200 rounded p-2 text-center text-sm">메시지</div>
+          <div class="bg-green-200 rounded p-2 text-center text-sm">이력서</div>
+          <div class="bg-green-200 rounded p-2 text-center text-sm">설정</div>
+        </div>
+      </div>
+      
+      <div class="flex justify-center mb-4">
+        <div class="text-center">
+          <div class="w-0.5 h-4 bg-gray-400 mx-auto"></div>
+          <span class="text-xs text-gray-600">HTTP REST API / WebSocket</span>
+          <div class="w-0.5 h-4 bg-gray-400 mx-auto"></div>
+        </div>
+      </div>
+      
+      <!-- Backend -->
+      <div class="bg-purple-100 rounded-lg p-4 mb-4">
+        <div class="text-center font-semibold text-purple-800 mb-3">
+          ⚙️ Backend (Spring Boot 3.2) - localhost:8080
+        </div>
+        
+        <div class="space-y-2">
+          <div class="bg-purple-200 rounded p-2">
+            <div class="text-xs font-semibold mb-1">Controller Layer</div>
+            <div class="flex flex-wrap gap-1">
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">AuthController</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">CalendarController</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">TaskController</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">MessageController</span>
+            </div>
+          </div>
+          
+          <div class="bg-purple-200 rounded p-2">
+            <div class="text-xs font-semibold mb-1">Service Layer</div>
+            <div class="flex flex-wrap gap-1">
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">AuthService</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">CalendarService</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">TaskService</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">MessageService</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">NotificationService</span>
+            </div>
+          </div>
+          
+          <div class="bg-purple-200 rounded p-2">
+            <div class="text-xs font-semibold mb-1">Repository Layer</div>
+            <div class="flex flex-wrap gap-1">
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">UserRepository</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">CalendarRepository</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">TaskRepository</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">ThreadRepository</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">MessageRepository</span>
+              <span class="bg-purple-300 rounded px-2 py-0.5 text-xs">ResumeRepository</span>
+            </div>
+          </div>
+          
+          <div class="bg-yellow-200 rounded p-2">
+            <div class="text-xs font-semibold">Security Layer: JWT Token Provider + Auth Filter</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex justify-center mb-4">
+        <div class="w-0.5 h-8 bg-gray-400"></div>
+      </div>
+      
+      <!-- Databases -->
+      <div class="grid grid-cols-3 gap-4">
+        <div class="bg-blue-200 rounded-lg p-3 text-center">
+          <div class="font-semibold text-blue-800">🐬 MySQL</div>
+          <div class="text-xs">:3307</div>
+          <div class="text-xs mt-1">정합성 데이터</div>
+        </div>
+        <div class="bg-green-200 rounded-lg p-3 text-center">
+          <div class="font-semibold text-green-800">🍃 MongoDB</div>
+          <div class="text-xs">:27017</div>
+          <div class="text-xs mt-1">유연한 데이터</div>
+        </div>
+        <div class="bg-red-200 rounded-lg p-3 text-center">
+          <div class="font-semibold text-red-800">⚡ Redis</div>
+          <div class="text-xs">:6379</div>
+          <div class="text-xs mt-1">캐시/실시간</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 데이터베이스 역할 분담 -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">2. 데이터베이스 역할 분담</h2>
+    <div class="grid grid-cols-3 gap-4">
+      <div class="bg-white rounded-xl shadow-lg p-4">
+        <h3 class="font-semibold text-blue-700 mb-3 text-center">🐬 MySQL (정합성)</h3>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-blue-100 rounded p-2">
+            <div class="font-mono">users</div>
+            <div class="text-gray-600">사용자</div>
+          </div>
+          <div class="bg-blue-100 rounded p-2">
+            <div class="font-mono">tasks</div>
+            <div class="text-gray-600">할일</div>
+          </div>
+          <div class="bg-blue-100 rounded p-2">
+            <div class="font-mono">calendar_events</div>
+            <div class="text-gray-600">일정</div>
+          </div>
+          <div class="bg-blue-100 rounded p-2">
+            <div class="font-mono">threads</div>
+            <div class="text-gray-600">메시지 스레드</div>
+          </div>
+          <div class="bg-blue-100 rounded p-2">
+            <div class="font-mono">messages</div>
+            <div class="text-gray-600">메시지</div>
+          </div>
+          <div class="bg-blue-100 rounded p-2">
+            <div class="font-mono">important_dates</div>
+            <div class="text-gray-600">중요일</div>
+          </div>
+          <div class="bg-blue-100 rounded p-2">
+            <div class="font-mono">resumes</div>
+            <div class="text-gray-600">이력서</div>
+          </div>
+          <div class="bg-blue-100 rounded p-2">
+            <div class="font-mono">notification_rules</div>
+            <div class="text-gray-600">알림규칙</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-lg p-4">
+        <h3 class="font-semibold text-green-700 mb-3 text-center">🍃 MongoDB (유연성)</h3>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-green-100 rounded p-2">
+            <div class="font-mono">message_raw</div>
+            <div class="text-gray-600">원본 메시지</div>
+          </div>
+          <div class="bg-green-100 rounded p-2">
+            <div class="font-mono">resume_versions</div>
+            <div class="text-gray-600">이력서 버전</div>
+          </div>
+          <div class="bg-green-100 rounded p-2">
+            <div class="font-mono">ai_artifacts</div>
+            <div class="text-gray-600">AI 결과물</div>
+          </div>
+          <div class="bg-green-100 rounded p-2">
+            <div class="font-mono">activity_log</div>
+            <div class="text-gray-600">활동 로그</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-lg p-4">
+        <h3 class="font-semibold text-red-700 mb-3 text-center">⚡ Redis (실시간)</h3>
+        <div class="space-y-2 text-xs">
+          <div class="bg-red-100 rounded p-2">세션 캐시</div>
+          <div class="bg-red-100 rounded p-2">실시간 메시지 스트림</div>
+          <div class="bg-red-100 rounded p-2">알림 큐</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- JWT 인증 흐름 -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">3. JWT 인증 흐름</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="flex items-center justify-between">
+        <div class="bg-blue-100 rounded-lg p-4 text-center w-24">
+          <div class="text-2xl">👤</div>
+          <div class="text-xs">Client</div>
+        </div>
+        
+        <div class="flex-1 px-4">
+          <div class="relative">
+            <div class="flex items-center mb-4">
+              <div class="flex-1 h-0.5 bg-blue-400"></div>
+              <div class="bg-blue-200 rounded px-2 py-1 text-xs mx-2">1. POST /login {email, pw}</div>
+              <div class="text-blue-400">→</div>
+            </div>
+            
+            <div class="flex items-center mb-4">
+              <div class="text-green-400">←</div>
+              <div class="bg-green-200 rounded px-2 py-1 text-xs mx-2">2. JWT Token 발급</div>
+              <div class="flex-1 h-0.5 bg-green-400"></div>
+            </div>
+            
+            <div class="flex items-center mb-4">
+              <div class="flex-1 h-0.5 bg-purple-400"></div>
+              <div class="bg-purple-200 rounded px-2 py-1 text-xs mx-2">3. GET /api/* + Bearer Token</div>
+              <div class="text-purple-400">→</div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="text-orange-400">←</div>
+              <div class="bg-orange-200 rounded px-2 py-1 text-xs mx-2">4. Response Data</div>
+              <div class="flex-1 h-0.5 bg-orange-400"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-purple-100 rounded-lg p-4 text-center w-24">
+          <div class="text-2xl">⚙️</div>
+          <div class="text-xs">Backend</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 메시지 수신 흐름 -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">4. 외부 메시지 수신 흐름</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="flex items-start justify-between gap-4">
+        <div class="bg-gray-100 rounded-lg p-3 text-center flex-shrink-0">
+          <div class="text-2xl">🌐</div>
+          <div class="text-xs">외부 방문자</div>
+        </div>
+        
+        <div class="flex-1 space-y-2">
+          <div class="flex items-center">
+            <span class="bg-blue-200 rounded px-2 py-1 text-xs">1. POST /contact/{slug}</span>
+            <div class="flex-1 h-0.5 bg-blue-300 mx-2"></div>
+            <span class="text-xs">→</span>
+          </div>
+          
+          <div class="flex items-center pl-8">
+            <span class="bg-green-200 rounded px-2 py-1 text-xs">2. Thread/Message 저장</span>
+            <div class="flex-1 h-0.5 bg-green-300 mx-2"></div>
+            <span class="text-xs text-green-600">MySQL</span>
+          </div>
+          
+          <div class="flex items-center pl-8">
+            <span class="bg-yellow-200 rounded px-2 py-1 text-xs">3. Raw 메시지 저장 (IP, UA 등)</span>
+            <div class="flex-1 h-0.5 bg-yellow-300 mx-2"></div>
+            <span class="text-xs text-yellow-600">MongoDB</span>
+          </div>
+          
+          <div class="flex items-center pl-8">
+            <span class="bg-red-200 rounded px-2 py-1 text-xs">4. 실시간 알림 전송</span>
+            <div class="flex-1 h-0.5 bg-red-300 mx-2"></div>
+            <span class="text-xs text-red-600">WebSocket</span>
+          </div>
+        </div>
+        
+        <div class="bg-purple-100 rounded-lg p-3 text-center flex-shrink-0">
+          <div class="text-2xl">👤</div>
+          <div class="text-xs">이력서 주인</div>
+          <div class="text-xs text-purple-600">(실시간 수신)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 기술 스택 -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">5. 기술 스택</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-blue-50 rounded-lg p-4">
+          <h4 class="font-semibold text-blue-700 mb-2">Frontend</h4>
+          <div class="space-y-1 text-sm">
+            <div>⚛️ React 18</div>
+            <div>📘 TypeScript</div>
+            <div>⚡ Vite</div>
+            <div>🎨 TailwindCSS</div>
+            <div>🐻 Zustand</div>
+            <div>🔄 TanStack Query</div>
+          </div>
+        </div>
+        
+        <div class="bg-purple-50 rounded-lg p-4">
+          <h4 class="font-semibold text-purple-700 mb-2">Backend</h4>
+          <div class="space-y-1 text-sm">
+            <div>🍃 Spring Boot 3.2</div>
+            <div>☕ Java 17</div>
+            <div>🔐 JWT Auth</div>
+            <div>📦 Spring Data JPA</div>
+            <div>🔌 WebSocket (STOMP)</div>
+          </div>
+        </div>
+        
+        <div class="bg-green-50 rounded-lg p-4">
+          <h4 class="font-semibold text-green-700 mb-2">Database</h4>
+          <div class="space-y-1 text-sm">
+            <div>🐬 MySQL 8.0</div>
+            <div>🍃 MongoDB 7.0</div>
+            <div>⚡ Redis 7</div>
+          </div>
+        </div>
+        
+        <div class="bg-orange-50 rounded-lg p-4">
+          <h4 class="font-semibold text-orange-700 mb-2">DevOps</h4>
+          <div class="space-y-1 text-sm">
+            <div>🐳 Docker</div>
+            <div>📦 Docker Compose</div>
+            <div>🔧 Gradle 8.4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- API 엔드포인트 -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">6. 주요 API 엔드포인트</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h4 class="font-semibold text-gray-700 mb-2">🔐 인증 (Public)</h4>
+          <div class="space-y-1 text-sm font-mono bg-gray-50 rounded p-3">
+            <div><span class="text-green-600">POST</span> /api/auth/signup</div>
+            <div><span class="text-green-600">POST</span> /api/auth/login</div>
+            <div><span class="text-green-600">POST</span> /api/auth/refresh</div>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold text-gray-700 mb-2">📅 캘린더</h4>
+          <div class="space-y-1 text-sm font-mono bg-gray-50 rounded p-3">
+            <div><span class="text-blue-600">GET</span> /api/calendar</div>
+            <div><span class="text-green-600">POST</span> /api/calendar</div>
+            <div><span class="text-orange-600">PUT</span> /api/calendar/{id}</div>
+            <div><span class="text-red-600">DELETE</span> /api/calendar/{id}</div>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold text-gray-700 mb-2">✅ 할일</h4>
+          <div class="space-y-1 text-sm font-mono bg-gray-50 rounded p-3">
+            <div><span class="text-blue-600">GET</span> /api/tasks</div>
+            <div><span class="text-green-600">POST</span> /api/tasks</div>
+            <div><span class="text-purple-600">PATCH</span> /api/tasks/{id}/status</div>
+            <div><span class="text-blue-600">GET</span> /api/tasks/stats</div>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold text-gray-700 mb-2">📬 메시지</h4>
+          <div class="space-y-1 text-sm font-mono bg-gray-50 rounded p-3">
+            <div><span class="text-green-600">POST</span> /api/contact/{slug} <span class="text-gray-400">(public)</span></div>
+            <div><span class="text-blue-600">GET</span> /api/inbox</div>
+            <div><span class="text-blue-600">GET</span> /api/inbox/{id}</div>
+            <div><span class="text-green-600">POST</span> /api/inbox/{id}/reply</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AOP -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">7. AOP (Aspect-Oriented Programming)</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-blue-50 rounded-lg p-4">
+          <h4 class="font-semibold text-blue-700 mb-2">📝 LoggingAspect</h4>
+          <div class="text-sm text-gray-600">Controller/Service 진입/종료 로깅</div>
+          <div class="mt-2 bg-gray-800 text-green-400 rounded p-2 text-xs font-mono">
+            ▶ [Controller] login() 호출<br>
+            ◀ [Controller] login() 완료 - 150ms
+          </div>
+        </div>
+        
+        <div class="bg-purple-50 rounded-lg p-4">
+          <h4 class="font-semibold text-purple-700 mb-2">⚡ PerformanceAspect</h4>
+          <div class="text-sm text-gray-600">Repository 쿼리 성능 측정</div>
+          <div class="mt-2 bg-gray-800 text-yellow-400 rounded p-2 text-xs font-mono">
+            🐢 [SLOW QUERY] findByEmail() - 520ms
+          </div>
+        </div>
+        
+        <div class="bg-green-50 rounded-lg p-4">
+          <h4 class="font-semibold text-green-700 mb-2">🔧 CustomAspect</h4>
+          <div class="text-sm text-gray-600">커스텀 어노테이션 처리</div>
+          <div class="mt-2 bg-gray-800 text-blue-400 rounded p-2 text-xs font-mono">
+            @LogExecutionTime<br>
+            @Retry(maxAttempts=3)
+          </div>
+        </div>
+      </div>
+      
+      <h4 class="font-semibold text-gray-700 mb-2">AOP 흐름도</h4>
+      <div class="bg-gray-50 rounded-lg p-4">
+        <div class="flex items-center justify-between text-sm">
+          <div class="bg-blue-200 rounded px-3 py-2 text-center">
+            <div>👤 Client</div>
+            <div class="text-xs">Request</div>
+          </div>
+          <div class="text-gray-400">→</div>
+          <div class="bg-yellow-200 rounded px-3 py-2 text-center">
+            <div>📝 LoggingAspect</div>
+            <div class="text-xs">Before/After</div>
+          </div>
+          <div class="text-gray-400">→</div>
+          <div class="bg-purple-200 rounded px-3 py-2 text-center">
+            <div>⚙️ Controller</div>
+            <div class="text-xs">Business Logic</div>
+          </div>
+          <div class="text-gray-400">→</div>
+          <div class="bg-green-200 rounded px-3 py-2 text-center">
+            <div>📦 Service</div>
+            <div class="text-xs">+ Performance</div>
+          </div>
+          <div class="text-gray-400">→</div>
+          <div class="bg-red-200 rounded px-3 py-2 text-center">
+            <div>🗄️ Repository</div>
+            <div class="text-xs">Query Time</div>
+          </div>
+        </div>
+      </div>
+      
+      <h4 class="font-semibold text-gray-700 mt-4 mb-2">커스텀 어노테이션 사용 예시</h4>
+      <div class="bg-gray-800 text-gray-100 rounded-lg p-4 font-mono text-sm">
+        <div class="text-green-400">// 실행 시간 로깅</div>
+        <div><span class="text-yellow-400">@LogExecutionTime</span></div>
+        <div><span class="text-purple-400">public void</span> processData() { ... }</div>
+        <br>
+        <div class="text-green-400">// 실패 시 자동 재시도 (3번, 1초 간격)</div>
+        <div><span class="text-yellow-400">@Retry</span>(maxAttempts = 3, delay = 1000)</div>
+        <div><span class="text-purple-400">public void</span> callExternalApi() { ... }</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 폴더 구조 -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">8. 프로젝트 폴더 구조</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h4 class="font-semibold text-purple-700 mb-2">Backend (Spring Boot)</h4>
+          <pre class="text-xs bg-gray-50 rounded p-3 overflow-x-auto">
+backend/src/main/java/com/pickmeup/
+├── PickmeupApplication.java
+├── config/
+│   ├── security/
+│   │   ├── JwtTokenProvider.java
+│   │   ├── JwtAuthenticationFilter.java
+│   │   └── SecurityConfig.java
+│   ├── RedisConfig.java
+│   └── WebSocketConfig.java
+├── controller/
+│   ├── AuthController.java
+│   ├── CalendarController.java
+│   ├── TaskController.java
+│   └── MessageController.java
+├── service/
+│   ├── AuthService.java
+│   ├── CalendarService.java
+│   ├── TaskService.java
+│   └── MessageService.java
+├── domain/
+│   ├── user/User.java
+│   ├── calendar/CalendarEvent.java
+│   ├── task/Task.java
+│   └── message/Thread.java, Message.java
+├── repository/
+│   ├── UserRepository.java
+│   └── ...
+├── dto/
+│   └── ...
+└── exception/
+    └── GlobalExceptionHandler.java
+          </pre>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold text-green-700 mb-2">Frontend (React)</h4>
+          <pre class="text-xs bg-gray-50 rounded p-3 overflow-x-auto">
+frontend/src/
+├── main.tsx
+├── App.tsx
+├── index.css
+├── stores/
+│   └── authStore.ts
+├── lib/
+│   ├── api.ts
+│   └── utils.ts
+├── types/
+│   └── index.ts
+├── layouts/
+│   ├── PublicLayout.tsx
+│   └── PrivateLayout.tsx
+└── pages/
+    ├── auth/
+    │   ├── LoginPage.tsx
+    │   └── SignUpPage.tsx
+    ├── public/
+    │   └── ResumePage.tsx
+    └── private/
+        ├── DashboardPage.tsx
+        ├── CalendarPage.tsx
+        ├── TasksPage.tsx
+        ├── InboxPage.tsx
+        ├── ImportantDatesPage.tsx
+        ├── ResumeEditPage.tsx
+        └── SettingsPage.tsx
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 실행 방법 -->
+  <div>
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">9. 실행 방법</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="space-y-4">
+        <div class="bg-gray-800 text-green-400 rounded-lg p-4 font-mono text-sm">
+          <div class="text-gray-500"># 1. Docker로 DB 실행</div>
+          <div>cd docker</div>
+          <div>docker compose -f docker-compose.dev.yml up -d</div>
+          <br>
+          <div class="text-gray-500"># 2. 백엔드 실행</div>
+          <div>cd backend</div>
+          <div>.\gradlew bootRun</div>
+          <br>
+          <div class="text-gray-500"># 3. 프론트엔드 실행</div>
+          <div>cd frontend</div>
+          <div>npm install</div>
+          <div>npm run dev</div>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div class="bg-green-100 rounded-lg p-3">
+            <div class="font-semibold text-green-700">Frontend</div>
+            <div class="text-sm">http://localhost:3000</div>
+          </div>
+          <div class="bg-purple-100 rounded-lg p-3">
+            <div class="font-semibold text-purple-700">Backend</div>
+            <div class="text-sm">http://localhost:8080</div>
+          </div>
+          <div class="bg-blue-100 rounded-lg p-3">
+            <div class="font-semibold text-blue-700">Swagger</div>
+            <div class="text-sm">http://localhost:8080/swagger-ui</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
