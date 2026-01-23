@@ -41,10 +41,10 @@ dist/
 .vite/
 
 # =====================
-# Spring Boot secrets
-# =====================
-src/main/resources/application-*.yml
-src/main/resources/application-*.yaml
+# Spring Boot secrets (backend)
+backend/src/main/resources/application-*.yml
+backend/src/main/resources/application-*.yaml
+
 
 # =====================
 # Environment

@@ -61,7 +61,7 @@ kakao:
   redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:3000/auth/kakao/callback}
 
 openai:
-  api-key: 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
+  api-key: ${OPENAI_API_KEY:}
   daily-limit: 5
 
 serpapi:
