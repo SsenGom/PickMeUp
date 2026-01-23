@@ -8,37 +8,28 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-file:
-  upload-dir: ./uploads
-
----
-spring:
-  config:
-    activate:
-      on-profile: local
-  
   datasource:
-    url: jdbc:mysql://localhost:3307/pickmeup?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-    username: pickmeup
-    password: pickmeup123
+    url: ${DB_URL:jdbc:mysql://localhost:3307/pickmeup?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul}
+    username: ${DB_USERNAME:pickmeup}
+    password: ${DB_PASSWORD:pickmeup123}
     driver-class-name: com.mysql.cj.jdbc.Driver
-  
+
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-  
+
   data:
     mongodb:
-      uri: mongodb://pickmeup:pickmeup123@localhost:27017/pickmeup?authSource=admin
+      uri: ${MONGODB_URI:mongodb://localhost:27017/pickmeup}
     redis:
-      host: localhost
-      port: 6379
-  
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -51,26 +42,29 @@ spring:
           starttls:
             enable: true
 
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:./uploads}
+
 jwt:
-  secret: ${JWT_SECRET:pickmeup-local-secret-key-must-be-at-least-256-bits-long}
-  access-token-expiry: 3600000
-  refresh-token-expiry: 604800000
+  secret: ${JWT_SECRET:}
+  access-token-expiry: ${JWT_ACCESS_EXPIRY:3600000}
+  refresh-token-expiry: ${JWT_REFRESH_EXPIRY:604800000}
 
 kakao:
   rest-api-key: ${KAKAO_REST_API_KEY:}
   redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:3000/auth/kakao/callback}
 
 openai:
-  api-key: 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
-  daily-limit: 5
+  api-key: ${OPENAI_API_KEY:}
+  daily-limit: ${OPENAI_DAILY_LIMIT:5}
 
 serpapi:
   api-key: ${SERPAPI_API_KEY:}
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 logging:
   level:
-    com.pickmeup: DEBUG
-    org.springframework.security: DEBUG
+    com.pickmeup: ${LOG_LEVEL:INFO}
+    org.springframework.security: ${LOG_LEVEL_SECURITY:WARN}
