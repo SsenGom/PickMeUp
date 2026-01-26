@@ -88,11 +88,17 @@ public class ResumeDto {
         @NotBlank
         private String title;
         private String description;
+        private String detailContent;
+        private String role;
+        private Integer teamSize;
+        private String achievements;
         private String startDate;
         private String endDate;
         private String projectUrl;
         private String githubUrl;
+        private String demoUrl;
         private String thumbnailUrl;
+        private String screenshots;
         private List<String> techStacks;
         private Boolean isFeatured = false;
     }
@@ -345,11 +351,17 @@ public class ResumeDto {
         private Long id;
         private String title;
         private String description;
+        private String detailContent;
+        private String role;
+        private Integer teamSize;
+        private String achievements;
         private String startDate;
         private String endDate;
         private String projectUrl;
         private String githubUrl;
+        private String demoUrl;
         private String thumbnailUrl;
+        private String screenshots;
         private List<String> techStacks;
         private Boolean isFeatured;
         private Integer displayOrder;
@@ -359,11 +371,17 @@ public class ResumeDto {
                     .id(project.getId())
                     .title(project.getTitle())
                     .description(project.getDescription())
+                    .detailContent(project.getDetailContent())
+                    .role(project.getRole())
+                    .teamSize(project.getTeamSize())
+                    .achievements(project.getAchievements())
                     .startDate(project.getStartDate())
                     .endDate(project.getEndDate())
                     .projectUrl(project.getProjectUrl())
                     .githubUrl(project.getGithubUrl())
+                    .demoUrl(project.getDemoUrl())
                     .thumbnailUrl(project.getThumbnailUrl())
+                    .screenshots(project.getScreenshots())
                     .techStacks(project.getTechStacks())
                     .isFeatured(project.getIsFeatured())
                     .displayOrder(project.getDisplayOrder())

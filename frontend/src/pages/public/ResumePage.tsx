@@ -62,12 +62,19 @@ interface Project {
   id: number
   title: string
   description: string
+  detailContent: string
+  role: string
+  teamSize: number
+  achievements: string
   startDate: string
   endDate: string
   projectUrl: string
   githubUrl: string
+  demoUrl: string
   thumbnailUrl?: string
+  screenshots: string
   techStacks: string[]
+  isFeatured: boolean
 }
 
 interface Skill {
@@ -355,55 +362,7 @@ export default function ResumePage() {
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               {resume.projects.map((project) => (
-                <div key={project.id} className="group bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-lg transition-all">
-                  {project.thumbnailUrl ? (
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        src={project.thumbnailUrl}
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-32 bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                      <Code className="w-12 h-12 text-white/50" />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-800 group-hover:text-primary-600 transition-colors">
-                          {project.title}
-                        </h3>
-                        <p className="text-sm text-slate-500">{project.startDate} - {project.endDate || '진행중'}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        {project.githubUrl && (
-                          <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
-                             className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
-                            <Github className="w-5 h-5" />
-                          </a>
-                        )}
-                        {project.projectUrl && (
-                          <a href={project.projectUrl} target="_blank" rel="noopener noreferrer"
-                             className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
-                            <ExternalLink className="w-5 h-5" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                    {project.description && (
-                      <p className="text-slate-600 text-sm mb-4 line-clamp-3">{project.description}</p>
-                    )}
-                    <div className="flex flex-wrap gap-2">
-                      {project.techStacks.map((tech) => (
-                        <span key={tech} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md font-medium">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                <ProjectCard key={project.id} project={project} />
               ))}
             </div>
           </section>
@@ -796,5 +755,198 @@ function PortfolioViewModal({ file, onClose }: { file: PortfolioFile; onClose: (
         </div>
       </div>
     </div>
+  )
+}
+
+// 프로젝트 카드 (클릭하면 상세보기)
+function ProjectCard({ project }: { project: Project }) {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <>
+      <div 
+        onClick={() => setExpanded(true)}
+        className="group bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-lg transition-all cursor-pointer"
+      >
+        {project.thumbnailUrl ? (
+          <div className="h-48 overflow-hidden">
+            <img
+              src={project.thumbnailUrl}
+              alt={project.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        ) : (
+          <div className="h-32 bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+            <Code className="w-12 h-12 text-white/50" />
+          </div>
+        )}
+        <div className="p-6">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-slate-800 group-hover:text-primary-600 transition-colors">
+                  {project.title}
+                </h3>
+                {project.isFeatured && (
+                  <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded-full">Featured</span>
+                )}
+              </div>
+              <p className="text-sm text-slate-500">{project.startDate} - {project.endDate || '진행중'}</p>
+            </div>
+            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+              {project.githubUrl && (
+                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
+                   className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                  <Github className="w-5 h-5" />
+                </a>
+              )}
+              {project.projectUrl && (
+                <a href={project.projectUrl} target="_blank" rel="noopener noreferrer"
+                   className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                  <ExternalLink className="w-5 h-5" />
+                </a>
+              )}
+            </div>
+          </div>
+          {project.description && (
+            <p className="text-slate-600 text-sm mb-4 line-clamp-2">{project.description}</p>
+          )}
+          <div className="flex flex-wrap gap-2">
+            {project.techStacks?.slice(0, 4).map((tech) => (
+              <span key={tech} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md font-medium">
+                {tech}
+              </span>
+            ))}
+            {project.techStacks?.length > 4 && (
+              <span className="px-2 py-1 bg-slate-100 text-slate-500 text-xs rounded-md">
+                +{project.techStacks.length - 4}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 프로젝트 상세 모달 */}
+      {expanded && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setExpanded(false)}>
+          <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {/* 헤더 */}
+            <div className="relative">
+              {project.thumbnailUrl ? (
+                <div className="h-56 overflow-hidden">
+                  <img src={project.thumbnailUrl} alt={project.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                </div>
+              ) : (
+                <div className="h-32 bg-gradient-to-br from-violet-500 to-purple-600" />
+              )}
+              <button 
+                onClick={() => setExpanded(false)}
+                className="absolute top-4 right-4 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg"
+              >
+                ✕
+              </button>
+              <div className="absolute bottom-4 left-6 right-6 text-white">
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-2xl font-bold">{project.title}</h2>
+                  {project.isFeatured && (
+                    <span className="px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs rounded-full">Featured</span>
+                  )}
+                </div>
+                <p className="text-white/80">{project.startDate} - {project.endDate || '진행중'}</p>
+              </div>
+            </div>
+
+            {/* 본문 */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-14rem)]">
+              {/* 요약 정보 */}
+              <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-slate-50 rounded-xl">
+                {project.role && (
+                  <div>
+                    <span className="text-xs text-slate-500 uppercase">역할</span>
+                    <p className="font-medium text-slate-800">{project.role}</p>
+                  </div>
+                )}
+                {project.teamSize && (
+                  <div>
+                    <span className="text-xs text-slate-500 uppercase">팀 규모</span>
+                    <p className="font-medium text-slate-800">{project.teamSize}명</p>
+                  </div>
+                )}
+                <div>
+                  <span className="text-xs text-slate-500 uppercase">기간</span>
+                  <p className="font-medium text-slate-800">{project.startDate} - {project.endDate || '진행중'}</p>
+                </div>
+              </div>
+
+              {/* 링크들 */}
+              <div className="flex flex-wrap gap-3 mb-6">
+                {project.githubUrl && (
+                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
+                     className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800">
+                    <Github className="w-4 h-4" /> GitHub
+                  </a>
+                )}
+                {project.projectUrl && (
+                  <a href={project.projectUrl} target="_blank" rel="noopener noreferrer"
+                     className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                    <ExternalLink className="w-4 h-4" /> 배포 URL
+                  </a>
+                )}
+                {project.demoUrl && (
+                  <a href={project.demoUrl} target="_blank" rel="noopener noreferrer"
+                     className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700">
+                    <Play className="w-4 h-4" /> 데모 영상
+                  </a>
+                )}
+              </div>
+
+              {/* 기술 스택 */}
+              {project.techStacks?.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase mb-3">기술 스택</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {project.techStacks.map((tech) => (
+                      <span key={tech} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 프로젝트 설명 */}
+              {project.description && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase mb-3">개요</h3>
+                  <p className="text-slate-700">{project.description}</p>
+                </div>
+              )}
+
+              {/* 상세 설명 */}
+              {project.detailContent && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase mb-3">상세 설명</h3>
+                  <div className="prose prose-slate max-w-none">
+                    <div dangerouslySetInnerHTML={{ __html: parseMarkdown(project.detailContent) }} />
+                  </div>
+                </div>
+              )}
+
+              {/* 주요 성과 */}
+              {project.achievements && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase mb-3">주요 성과</h3>
+                  <div className="p-4 bg-green-50 border border-green-100 rounded-xl">
+                    <p className="text-green-800 whitespace-pre-wrap">{project.achievements}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

@@ -30,7 +30,7 @@ import DashboardPage from '@/pages/private/DashboardPage'
 import CalendarPage from '@/pages/private/CalendarPage'
 import TasksPage from '@/pages/private/TasksPage'
 import InboxPage from '@/pages/private/InboxPage'
-import ResumeEditPage from '@/pages/private/ResumeEditPage'
+import ResumeEditPageNew from '@/pages/private/ResumeEditPageNew'
 import SettingsPage from '@/pages/private/SettingsPage'
 import JobsPage from '@/pages/private/JobsPage'
 import JobDetailPage from '@/pages/private/JobDetailPage'
@@ -98,7 +98,7 @@ function App() {
         <Route path="/jobs" element={<JobsPage />} />
         <Route path="/jobs/:id" element={<JobDetailPage />} />
         <Route path="/inbox" element={<InboxPage />} />
-        <Route path="/resume/edit" element={<ResumeEditPage />} />
+        <Route path="/resume/edit" element={<ResumeEditPageNew />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
 

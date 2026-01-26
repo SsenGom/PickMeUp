@@ -69,7 +69,8 @@ public class SecurityConfig {
                         // permitAll(): 인증 없이 접근 가능
                         .requestMatchers("/api/auth/**").permitAll()        // 로그인, 회원가입
                         .requestMatchers("/api/public/**").permitAll()      // 공개 API
-                        .requestMatchers(HttpMethod.GET, "/api/resume/{slug}").permitAll()  // 공개 이력서 조회
+                        .requestMatchers("/api/resume/public/**").permitAll()  // 공개 이력서 조회
+                        .requestMatchers(HttpMethod.GET, "/api/resume/{slug}").permitAll()  // 공개 이력서 조회 (레거시)
                         .requestMatchers(HttpMethod.POST, "/api/contact/**").permitAll()    // 외부 메시지 수신
                         .requestMatchers("/ws/**").permitAll()              // WebSocket
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()  // Swagger 문서
