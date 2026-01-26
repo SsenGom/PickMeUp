@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()      // 공개 API
                         .requestMatchers("/api/resume/public/**").permitAll()  // 공개 이력서 조회
                         .requestMatchers(HttpMethod.GET, "/api/resume/{slug}").permitAll()  // 공개 이력서 조회 (레거시)
+                        .requestMatchers("/uploads/**").permitAll()         // 업로드된 파일 (이미지, PDF)
                         .requestMatchers(HttpMethod.POST, "/api/contact/**").permitAll()    // 외부 메시지 수신
                         .requestMatchers("/ws/**").permitAll()              // WebSocket
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()  // Swagger 문서

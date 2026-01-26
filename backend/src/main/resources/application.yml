@@ -45,6 +45,11 @@ spring:
 file:
   upload-dir: ${FILE_UPLOAD_DIR:./uploads}
 
+app:
+  upload:
+    path: ${FILE_UPLOAD_DIR:./uploads}
+    max-size: 10485760
+
 jwt:
   secret: ${JWT_SECRET:}
   access-token-expiry: ${JWT_ACCESS_EXPIRY:3600000}

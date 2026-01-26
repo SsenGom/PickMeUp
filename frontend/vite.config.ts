@@ -75,6 +75,11 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,  // Origin 헤더 변경 (Host 헤더를 target으로)
       },
+      // 업로드된 파일 접근 (이미지, PDF 등)
+      '/uploads': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
       // WebSocket 연결도 프록시
       '/ws': {
         target: 'http://localhost:8080',

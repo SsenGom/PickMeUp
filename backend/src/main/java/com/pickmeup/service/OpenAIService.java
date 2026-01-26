@@ -485,4 +485,82 @@ public class OpenAIService {
             throw new BusinessException(ErrorCode.AI_SERVICE_ERROR, "채용공고 분석에 실패했습니다.");
         }
     }
+
+    /**
+     * 프로젝트 설명을 기반으로 Mermaid 다이어그램 생성
+     */
+    public String generateDiagram(String content, String diagramType, String customPrompt) {
+        validateApiKey();
+        
+        if (!isProcessing.compareAndSet(false, true)) {
+            throw new BusinessException(ErrorCode.AI_SERVICE_ERROR, "이미 AI 요청이 진행 중입니다.");
+        }
+
+        try {
+            String systemPrompt = """
+                당신은 소프트웨어 아키텍처 시각화 전문가입니다.
+                사용자의 프로젝트 설명을 분석하여 Mermaid 다이어그램 코드를 생성합니다.
+                
+                규칙:
+                1. 반드시 유효한 Mermaid 문법만 사용하세요.
+                2. 다이어그램 코드만 출력하세요 (```mermaid 태그 포함).
+                3. 한글을 사용해도 됩니다.
+                4. 너무 복잡하지 않게, 핵심만 표현하세요.
+                """;
+
+            String diagramPrompt = switch (diagramType) {
+                case "architecture" -> """
+                    프로젝트의 시스템 아키텍처를 flowchart TD로 시각화해주세요.
+                    - 프론트엔드, 백엔드, 데이터베이스, 외부 서비스 등 주요 컴포넌트 표시
+                    - 컴포넌트 간 데이터 흐름 화살표로 표시
+                    """;
+                case "database" -> """
+                    프로젝트의 데이터베이스 구조를 erDiagram으로 시각화해주세요.
+                    - 주요 엔티티와 속성 표시
+                    - 엔티티 간 관계(1:N, N:M 등) 표시
+                    """;
+                case "flow" -> """
+                    프로젝트의 주요 비즈니스 로직을 flowchart TD로 시각화해주세요.
+                    - 사용자 액션부터 결과까지의 흐름
+                    - 조건 분기와 처리 과정 포함
+                    """;
+                case "sequence" -> """
+                    프로젝트의 주요 API 호출 시퀀스를 sequenceDiagram으로 시각화해주세요.
+                    - 클라이언트, 서버, DB 등 참여자 표시
+                    - 요청/응답 흐름 표시
+                    """;
+                default -> customPrompt != null ? customPrompt : "프로젝트 구조를 적절한 다이어그램으로 시각화해주세요.";
+            };
+
+            String userPrompt = String.format("""
+                프로젝트 설명:
+                %s
+                
+                요청:
+                %s
+                
+                Mermaid 다이어그램 코드만 출력하세요 (```mermaid로 감싸서).
+                """,
+                content.length() > 2000 ? content.substring(0, 2000) + "..." : content,
+                diagramPrompt
+            );
+
+            String response = callOpenAI(systemPrompt, userPrompt);
+            
+            // mermaid 코드 블록 추출
+            if (response.contains("```mermaid")) {
+                int start = response.indexOf("```mermaid");
+                int end = response.indexOf("```", start + 10);
+                if (end > start) {
+                    return response.substring(start, end + 3);
+                }
+            }
+            
+            // 코드 블록이 없으면 전체 응답을 mermaid로 감싸기
+            return "```mermaid\n" + response.trim() + "\n```";
+            
+        } finally {
+            isProcessing.set(false);
+        }
+    }
 }

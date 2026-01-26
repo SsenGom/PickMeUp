@@ -131,7 +131,7 @@ public class Resume extends BaseEntity {
     
     public void updateBasicInfo(String name, String email, String phone, 
                                  String birthDate, String gender, String address,
-                                 String profileImageUrl) {
+                                 String profileImageUrl, String bio) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -139,6 +139,7 @@ public class Resume extends BaseEntity {
         this.gender = gender;
         this.address = address;
         this.profileImageUrl = profileImageUrl;
+        this.bio = bio;
     }
     
     public void updateLinks(String githubUrl, String linkedinUrl, 

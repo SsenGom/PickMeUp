@@ -21,6 +21,7 @@ public class ResumeDto {
         private String gender;
         private String address;
         private String profileImageUrl;
+        private String bio;  // 한줄 소개 추가
     }
     
     @Getter
