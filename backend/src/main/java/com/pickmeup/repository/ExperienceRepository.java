@@ -10,5 +10,7 @@ public interface ExperienceRepository extends JpaRepository<Experience, Long> {
     
     List<Experience> findByResumeOrderByDisplayOrderAsc(Resume resume);
     
+    List<Experience> findByResumeIdOrderByDisplayOrderAsc(Long resumeId);
+    
     void deleteByResume(Resume resume);
 }

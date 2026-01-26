@@ -10,6 +10,8 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
     
     Optional<Resume> findByUser(User user);
     
+    Optional<Resume> findBySlug(String slug);
+    
     Optional<Resume> findBySlugAndIsPublicTrue(String slug);
     
     boolean existsBySlug(String slug);

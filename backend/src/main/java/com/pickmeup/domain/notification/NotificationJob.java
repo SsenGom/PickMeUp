@@ -25,10 +25,6 @@ public class NotificationJob extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rule_id")
-    private NotificationRule rule;
-    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationChannel channel;

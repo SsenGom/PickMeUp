@@ -29,8 +29,6 @@ import api from '@/lib/api'
 import {
   LayoutDashboard,
   Calendar,
-  CheckSquare,
-  Star,
   Mail,
   FileText,
   Settings,
@@ -39,6 +37,7 @@ import {
   Menu,
   X,
   Briefcase,
+  CheckSquare,
 } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
@@ -51,9 +50,8 @@ import { cn } from '@/lib/utils'
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: '대시보드' },
   { to: '/calendar', icon: Calendar, label: '캘린더' },
-  { to: '/jobs', icon: Briefcase, label: '취업관리' },
   { to: '/tasks', icon: CheckSquare, label: '할 일' },
-  { to: '/important-dates', icon: Star, label: '중요일' },
+  { to: '/jobs', icon: Briefcase, label: '취업관리' },
   { to: '/inbox', icon: Mail, label: '메시지' },
   { to: '/resume/edit', icon: FileText, label: '이력서' },
   { to: '/settings', icon: Settings, label: '설정' },

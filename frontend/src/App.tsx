@@ -29,7 +29,6 @@ import SignUpPage from '@/pages/auth/SignUpPage'
 import DashboardPage from '@/pages/private/DashboardPage'
 import CalendarPage from '@/pages/private/CalendarPage'
 import TasksPage from '@/pages/private/TasksPage'
-import ImportantDatesPage from '@/pages/private/ImportantDatesPage'
 import InboxPage from '@/pages/private/InboxPage'
 import ResumeEditPage from '@/pages/private/ResumeEditPage'
 import SettingsPage from '@/pages/private/SettingsPage'
@@ -96,7 +95,6 @@ function App() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/tasks" element={<TasksPage />} />
-        <Route path="/important-dates" element={<ImportantDatesPage />} />
         <Route path="/jobs" element={<JobsPage />} />
         <Route path="/jobs/:id" element={<JobDetailPage />} />
         <Route path="/inbox" element={<InboxPage />} />

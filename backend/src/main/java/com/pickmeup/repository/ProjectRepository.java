@@ -10,6 +10,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     
     List<Project> findByResumeOrderByDisplayOrderAsc(Resume resume);
     
+    List<Project> findByResumeIdOrderByDisplayOrderAsc(Long resumeId);
+    
     List<Project> findByResumeAndIsFeaturedTrueOrderByDisplayOrderAsc(Resume resume);
     
     void deleteByResume(Resume resume);
