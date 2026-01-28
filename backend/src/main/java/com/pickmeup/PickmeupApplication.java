@@ -3,6 +3,7 @@ package com.pickmeup;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -22,6 +23,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling       // 스케줄링 활성화
                         // @Scheduled 어노테이션으로 주기적 작업 실행 가능
                         // 예: @Scheduled(cron = "0 0 9 * * *") - 매일 9시에 실행
+
+@EnableAsync            // 비동기 처리 활성화
+                        // @Async 어노테이션이 붙은 메서드를 별도 스레드에서 실행
+                        // 이메일 발송 등 시간이 걸리는 작업을 비동기로 처리
 public class PickmeupApplication {
     
     /**

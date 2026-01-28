@@ -12,7 +12,7 @@
  * 3. 검증 통과 → API 호출
  * 4. 성공 → authStore에 저장 → 홈으로 이동
  */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,6 +21,9 @@ import api from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import toast from 'react-hot-toast'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
+
+// localStorage 키 상수
+const SAVED_EMAIL_KEY = 'pickmeup_saved_email'
 
 /**
  * Zod 스키마 - 폼 유효성 검증 규칙
@@ -51,6 +54,7 @@ export default function LoginPage() {
   // ===== 로컬 상태 =====
   const [showPassword, setShowPassword] = useState(false)  // 비밀번호 표시 토글
   const [loading, setLoading] = useState(false)            // 로딩 상태
+  const [rememberEmail, setRememberEmail] = useState(false) // 아이디 저장 체크박스
   
   // ===== 훅 =====
   const navigate = useNavigate()                           // 페이지 이동
@@ -65,16 +69,33 @@ export default function LoginPage() {
    * - register: input에 연결 (onChange, value 등 자동 관리)
    * - handleSubmit: 폼 제출 핸들러 래퍼
    * - formState.errors: 유효성 검증 에러
+   * - setValue: 프로그래밍 방식으로 값 설정
    * 
    * zodResolver: Zod 스키마를 react-hook-form과 연결
    */
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),  // Zod로 유효성 검증
   })
+
+  /**
+   * 컴포넌트 마운트 시 저장된 이메일 불러오기
+   * 
+   * localStorage에 저장된 이메일이 있으면:
+   * 1. 이메일 input에 값 설정
+   * 2. "아이디 저장" 체크박스 체크
+   */
+  useEffect(() => {
+    const savedEmail = localStorage.getItem(SAVED_EMAIL_KEY)
+    if (savedEmail) {
+      setValue('email', savedEmail)
+      setRememberEmail(true)
+    }
+  }, [setValue])
 
   /**
    * 폼 제출 핸들러
@@ -89,6 +110,13 @@ export default function LoginPage() {
     try {
       // API 호출: POST /api/auth/login
       const { data } = await api.post('/auth/login', formData)
+      
+      // 아이디 저장 처리
+      if (rememberEmail) {
+        localStorage.setItem(SAVED_EMAIL_KEY, formData.email)
+      } else {
+        localStorage.removeItem(SAVED_EMAIL_KEY)
+      }
       
       // 인증 정보 저장 (Zustand + localStorage)
       setAuth(data.data.user, data.data.accessToken, data.data.refreshToken)
@@ -154,6 +182,20 @@ export default function LoginPage() {
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
             )}
+          </div>
+
+          {/* 아이디 저장 체크박스 */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="rememberEmail"
+              checked={rememberEmail}
+              onChange={(e) => setRememberEmail(e.target.checked)}
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded cursor-pointer"
+            />
+            <label htmlFor="rememberEmail" className="ml-2 block text-sm text-gray-700 cursor-pointer">
+              아이디 저장
+            </label>
           </div>
 
           {/* 로그인 버튼 */}

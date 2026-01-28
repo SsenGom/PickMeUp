@@ -188,26 +188,36 @@ export default function InboxPage() {
           </div>
 
           {/* Reply Input */}
-          <div className="p-4 border-t">
-            <div className="flex gap-2">
+          <div className="p-4 border-t space-y-3">
+            {/* 안내 문구 */}
+            <div className="p-3 bg-amber-50 border border-amber-100 rounded-lg">
+              <p className="text-xs text-amber-700 leading-relaxed">
+                ✉️ 답장은 <span className="font-medium">{threadDetail?.senderEmail}</span>으로 이메일 발송됩니다. 한 번에 전달하고 싶은 내용을 정리해서 보내주세요.
+              </p>
+            </div>
+            
+            <div className="space-y-3">
               <textarea
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                placeholder="답장을 입력하세요..."
-                className="flex-1 px-4 py-2 border rounded-lg resize-none focus:ring-2 focus:ring-primary-500"
-                rows={2}
+                placeholder="답장 내용을 작성하세요..."
+                className="w-full px-4 py-3 border rounded-lg resize-none focus:ring-2 focus:ring-primary-500"
+                rows={6}
               />
-              <button
-                onClick={() => replyMutation.mutate(replyContent)}
-                disabled={!replyContent.trim() || replyMutation.isPending}
-                className="px-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors"
-              >
-                {replyMutation.isPending ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Send className="w-5 h-5" />
-                )}
-              </button>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => replyMutation.mutate(replyContent)}
+                  disabled={!replyContent.trim() || replyMutation.isPending}
+                  className="flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors font-medium"
+                >
+                  {replyMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  이메일 발송
+                </button>
+              </div>
             </div>
           </div>
         </div>

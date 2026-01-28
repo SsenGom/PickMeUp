@@ -15,6 +15,7 @@
  */
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
+import { useWebSocket } from '@/hooks/useWebSocket'
 
 // Layouts (페이지 공통 레이아웃)
 import PublicLayout from '@/layouts/PublicLayout'
@@ -67,6 +68,10 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
  * </Route>
  */
 function App() {
+  // WebSocket 연결 (로그인 상태에서 자동 연결)
+  // TODO: 나중에 활성화
+  // useWebSocket()
+  
   return (
     <Routes>
       {/* ========== Public Routes (비로그인 접근 가능) ========== */}

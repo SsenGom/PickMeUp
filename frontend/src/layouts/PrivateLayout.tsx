@@ -24,7 +24,9 @@
  */
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
+import { useNotificationStore } from '@/stores/notificationStore'
 import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import api from '@/lib/api'
 import {
   LayoutDashboard,
@@ -38,6 +40,8 @@ import {
   X,
   Briefcase,
   CheckSquare,
+  Wifi,
+  WifiOff,
 } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
@@ -64,15 +68,21 @@ export default function PrivateLayout() {
   // 전역 인증 상태에서 사용자 정보와 로그아웃 함수
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
+  
+  // 전역 알림 상태 (WebSocket에서 업데이트)
+  const { 
+    unreadMessageCount, 
+    setUnreadMessageCount,
+    isWebSocketConnected 
+  } = useNotificationStore()
 
   /**
    * 읽지 않은 메시지 개수 조회
    * 
    * refetchInterval: 30초마다 자동 재조회 (실시간성)
-   * 
-   * 새 메시지 알림에 사용
+   * WebSocket과 함께 사용하여 실시간 + 폴링 백업
    */
-  const { data: unreadCount } = useQuery({
+  const { data: unreadCountFromApi } = useQuery({
     queryKey: ['unreadCount'],
     queryFn: async () => {
       const { data } = await api.get('/inbox/unread-count')
@@ -80,6 +90,16 @@ export default function PrivateLayout() {
     },
     refetchInterval: 30000,  // 30초마다 폴링
   })
+  
+  // API에서 받아온 값으로 스토어 동기화
+  useEffect(() => {
+    if (unreadCountFromApi !== undefined) {
+      setUnreadMessageCount(unreadCountFromApi)
+    }
+  }, [unreadCountFromApi, setUnreadMessageCount])
+  
+  // 실제 표시할 읽지 않은 메시지 수 (스토어에서 가져옴)
+  const unreadCount = unreadMessageCount
 
   /**
    * 로그아웃 처리
@@ -141,7 +161,7 @@ export default function PrivateLayout() {
               <Icon className="w-5 h-5" />
               <span>{label}</span>
               {/* 메시지 메뉴에 읽지 않은 개수 뱃지 */}
-              {to === '/inbox' && unreadCount && unreadCount > 0 && (
+              {to === '/inbox' && unreadCount > 0 && (
                 <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
                   {unreadCount}
                 </span>
@@ -193,13 +213,25 @@ export default function PrivateLayout() {
             <div className="flex-1" />
 
             {/* 알림 버튼 */}
-            <button className="relative p-2 hover:bg-gray-100 rounded-full">
-              <Bell className="w-6 h-6 text-gray-600" />
-              {/* 읽지 않은 메시지 있으면 빨간 점 표시 */}
-              {unreadCount && unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+            <div className="flex items-center gap-2">
+              {/* WebSocket 연결 상태 표시 (개발용) */}
+              {import.meta.env.DEV && (
+                <div className="flex items-center gap-1 text-xs text-gray-400" title={isWebSocketConnected ? '실시간 연결됨' : '실시간 연결 끊김'}>
+                  {isWebSocketConnected ? (
+                    <Wifi className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <WifiOff className="w-4 h-4 text-gray-400" />
+                  )}
+                </div>
               )}
-            </button>
+              <button className="relative p-2 hover:bg-gray-100 rounded-full">
+                <Bell className="w-6 h-6 text-gray-600" />
+                {/* 읽지 않은 메시지 있으면 빨간 점 표시 */}
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+              </button>
+            </div>
           </div>
         </header>
 

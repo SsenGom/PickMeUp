@@ -25,6 +25,16 @@ export default defineConfig({
   plugins: [react()],
   
   /**
+   * 전역 변수 정의
+   * 
+   * sockjs-client가 Node.js의 global 변수를 참조하는데
+   * 브라우저에는 없어서 window로 대체
+   */
+  define: {
+    global: 'window',
+  },
+  
+  /**
    * 모듈 해석 설정
    */
   resolve: {

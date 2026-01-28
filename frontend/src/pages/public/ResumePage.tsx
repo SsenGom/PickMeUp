@@ -580,6 +580,13 @@ function ContactFormModal({ slug, onClose }: { slug: string; onClose: () => void
             />
           </div>
 
+          {/* 안내 문구 */}
+          <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg">
+            <p className="text-xs text-blue-700 leading-relaxed">
+              💌 답장은 입력하신 이메일({email || '이메일 주소'})로 발송됩니다. 정확한 이메일 주소를 입력해 주세요.
+            </p>
+          </div>
+
           <div className="flex gap-3 pt-2">
             <button
               type="button"
@@ -607,12 +614,12 @@ function ContactFormModal({ slug, onClose }: { slug: string; onClose: () => void
 function ProjectDetailModal({ project, onClose }: { project: Project; onClose: () => void }) {
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-xl" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b border-neutral-100">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-neutral-900">{project.title}</h2>
+              <h2 className="text-2xl font-bold text-neutral-900">{project.title}</h2>
               {project.isFeatured && (
                 <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">Featured</span>
               )}
@@ -625,49 +632,49 @@ function ProjectDetailModal({ project, onClose }: { project: Project; onClose: (
         </div>
 
         {/* Body */}
-        <div className="p-6 overflow-y-auto max-h-[calc(85vh-100px)] space-y-6">
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)] space-y-6">
           {/* Thumbnail */}
           {project.thumbnailUrl && (
             <img
               src={project.thumbnailUrl}
               alt={project.title}
-              className="w-full h-48 object-cover rounded-xl"
+              className="w-full h-64 object-cover rounded-xl"
             />
           )}
 
           {/* Meta */}
-          <div className="flex flex-wrap gap-6 text-sm">
+          <div className="flex flex-wrap gap-8 text-sm">
             {project.role && (
               <div>
                 <span className="text-neutral-400">역할</span>
-                <p className="font-medium text-neutral-900">{project.role}</p>
+                <p className="font-medium text-neutral-900 text-base">{project.role}</p>
               </div>
             )}
             {project.teamSize && (
               <div>
                 <span className="text-neutral-400">팀 규모</span>
-                <p className="font-medium text-neutral-900">{project.teamSize}명</p>
+                <p className="font-medium text-neutral-900 text-base">{project.teamSize}명</p>
               </div>
             )}
           </div>
 
           {/* Links */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {project.githubUrl && (
               <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
-                 className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 text-white text-sm rounded-lg hover:bg-neutral-800">
+                 className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white text-sm rounded-lg hover:bg-neutral-800">
                 <Github className="w-4 h-4" /> GitHub
               </a>
             )}
             {project.projectUrl && (
               <a href={project.projectUrl} target="_blank" rel="noopener noreferrer"
-                 className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
+                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
                 <ExternalLink className="w-4 h-4" /> 배포 URL
               </a>
             )}
             {project.demoUrl && (
               <a href={project.demoUrl} target="_blank" rel="noopener noreferrer"
-                 className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-sm rounded-lg hover:bg-violet-700">
+                 className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 text-white text-sm rounded-lg hover:bg-violet-700">
                 <Play className="w-4 h-4" /> 데모
               </a>
             )}
@@ -676,10 +683,10 @@ function ProjectDetailModal({ project, onClose }: { project: Project; onClose: (
           {/* Tech Stack */}
           {project.techStacks?.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-neutral-400 mb-2">기술 스택</h3>
+              <h3 className="text-sm font-medium text-neutral-400 mb-3">기술 스택</h3>
               <div className="flex flex-wrap gap-2">
                 {project.techStacks.map((tech) => (
-                  <span key={tech} className="px-3 py-1 bg-neutral-100 text-neutral-700 text-sm rounded-full">
+                  <span key={tech} className="px-3 py-1.5 bg-neutral-100 text-neutral-700 text-sm rounded-full">
                     {tech}
                   </span>
                 ))}
@@ -690,16 +697,16 @@ function ProjectDetailModal({ project, onClose }: { project: Project; onClose: (
           {/* Description */}
           {project.description && (
             <div>
-              <h3 className="text-sm font-medium text-neutral-400 mb-2">개요</h3>
-              <p className="text-neutral-700 leading-relaxed">{project.description}</p>
+              <h3 className="text-sm font-medium text-neutral-400 mb-3">개요</h3>
+              <p className="text-neutral-700 leading-relaxed text-base">{project.description}</p>
             </div>
           )}
 
           {/* Detail Content */}
           {project.detailContent && (
             <div>
-              <h3 className="text-sm font-medium text-neutral-400 mb-2">상세 설명</h3>
-              <div className="prose prose-sm prose-neutral max-w-none">
+              <h3 className="text-sm font-medium text-neutral-400 mb-3">상세 설명</h3>
+              <div className="prose prose-neutral max-w-none">
                 <div dangerouslySetInnerHTML={{ __html: parseMarkdown(project.detailContent) }} />
               </div>
             </div>
@@ -708,9 +715,9 @@ function ProjectDetailModal({ project, onClose }: { project: Project; onClose: (
           {/* Achievements */}
           {project.achievements && (
             <div>
-              <h3 className="text-sm font-medium text-neutral-400 mb-2">주요 성과</h3>
+              <h3 className="text-sm font-medium text-neutral-400 mb-3">주요 성과</h3>
               <div className="p-4 bg-green-50 border border-green-100 rounded-xl">
-                <p className="text-green-800 text-sm whitespace-pre-wrap">{project.achievements}</p>
+                <p className="text-green-800 whitespace-pre-wrap">{project.achievements}</p>
               </div>
             </div>
           )}

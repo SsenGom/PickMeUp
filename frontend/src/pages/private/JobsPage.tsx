@@ -634,8 +634,7 @@ export default function JobsPage() {
                     onChange={(e) => {
                       if (e.target.checked) {
                         localStorage.setItem('jobs-guide-seen', 'true')
-                      } else {
-                        localStorage.removeItem('jobs-guide-seen')
+                        handleGuideClose(true)
                       }
                     }}
                   />

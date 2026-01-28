@@ -32,7 +32,7 @@ spring:
 
   mail:
     host: smtp.gmail.com
-    port: 587
+    port:
     username: ${MAIL_USERNAME:}
     password: ${MAIL_PASSWORD:}
     properties:
@@ -49,6 +49,8 @@ app:
   upload:
     path: ${FILE_UPLOAD_DIR:./uploads}
     max-size: 10485760
+  mail:
+    enabled: ${MAIL_ENABLED:false}  # true로 바꾸면 실제 이메일 발송
 
 jwt:
   secret: ${JWT_SECRET:}

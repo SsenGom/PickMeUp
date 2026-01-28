@@ -809,8 +809,7 @@ export default function CalendarPage() {
                     onChange={(e) => {
                       if (e.target.checked) {
                         localStorage.setItem('calendar-guide-seen', 'true')
-                      } else {
-                        localStorage.removeItem('calendar-guide-seen')
+                        handleGuideClose(true)
                       }
                     }}
                   />
