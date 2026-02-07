@@ -69,7 +69,7 @@ export default defineConfig({
      * 문제:
      * Frontend (localhost:3000) → Backend (localhost:8080)
      * 브라우저 보안 정책으로 차단됨 (Cross-Origin)
-     * 
+     * ss
      * 해결:
      * Frontend → Vite 프록시 → Backend
      * 같은 Origin으로 보이므로 CORS 우회
