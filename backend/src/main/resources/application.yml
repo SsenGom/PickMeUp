@@ -22,6 +22,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true  # data.sql 로딩 활성화
+
+  sql:
+    init:
+      mode: always  # 항상 data.sql 실행 (프로덕션에서는 never로 변경!)
 
   data:
     mongodb:

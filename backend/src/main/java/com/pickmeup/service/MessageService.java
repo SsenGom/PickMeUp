@@ -103,17 +103,17 @@ public class MessageService {
                         .build());
         
         // 카카오톡 알림 (이력서 소유자 휴대폰 번호가 있는 경우)
-        if (owner.getPhoneNumber() != null && !owner.getPhoneNumber().isEmpty()) {
+        if (owner.getPhone() != null && !owner.getPhone().isEmpty()) {
             // 카카오톡 우선, 실패 시 SMS
             if (kakaoService.isConfigured()) {
                 kakaoService.sendNewMessageNotification(
-                    owner.getPhoneNumber(),
+                    owner.getPhone(),
                     request.getSenderName(),
                     request.getSubject()
                 );
             } else if (smsService.isConfigured()) {
                 smsService.sendNewMessageNotification(
-                    owner.getPhoneNumber(),
+                    owner.getPhone(),
                     request.getSenderName(),
                     request.getSubject()
                 );
@@ -333,7 +333,7 @@ public class MessageService {
                 .senderName(proposal.getCompanyName())
                 .senderEmail(recruiter.getEmail())
                 .subject(subject)
-                .isRead(false)
+                .status(ThreadStatus.UNREAD)
                 .build();
         
         threadRepository.save(thread);
@@ -341,7 +341,6 @@ public class MessageService {
         // 초기 시스템 메시지
         Message systemMessage = Message.builder()
                 .thread(thread)
-                .sender(null)  // 시스템 메시지
                 .content(String.format(
                     "💼 %s에서 %s 포지션으로 면접을 제안했습니다.\n\n" +
                     "급여: %s\n" +
@@ -353,7 +352,6 @@ public class MessageService {
                     proposal.getLocation() != null ? proposal.getLocation() : "미정"
                 ))
                 .direction(MessageDirection.INBOUND)
-                .isRead(false)
                 .build();
         
         messageRepository.save(systemMessage);

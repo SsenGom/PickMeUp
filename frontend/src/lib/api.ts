@@ -112,9 +112,16 @@ api.interceptors.response.use(
 )
 
 export default api
+export { api }  // named export도 추가
 
 /**
  * 사용 예시:
+ * 
+ * // default import (권장)
+ * import api from '@/lib/api'
+ * 
+ * // named import (호환성)
+ * import { api } from '@/lib/api'
  * 
  * // GET 요청
  * const response = await api.get('/tasks')
