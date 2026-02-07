@@ -76,6 +76,16 @@ public enum ErrorCode {
     EXTERNAL_API_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "외부 서비스 오류가 발생했습니다"),
     CRAWL_FAILED(HttpStatus.BAD_REQUEST, "채용공고를 불러올 수 없습니다"),
     
+    // ========== 헤드헌터 관련 ==========
+    NOT_RECRUITER(HttpStatus.FORBIDDEN, "헤드헌터 권한이 필요합니다"),
+    ALREADY_PICKED(HttpStatus.CONFLICT, "이미 픽한 이력서입니다"),
+    PICK_NOT_FOUND(HttpStatus.NOT_FOUND, "픽을 찾을 수 없습니다"),
+    CANNOT_PICK_OWN_RESUME(HttpStatus.BAD_REQUEST, "자신의 이력서는 픽할 수 없습니다"),
+    RESUME_NOT_PUBLIC(HttpStatus.BAD_REQUEST, "공개되지 않은 이력서입니다"),
+    PROPOSAL_NOT_FOUND(HttpStatus.NOT_FOUND, "제안을 찾을 수 없습니다"),
+    PROPOSAL_ALREADY_RESPONDED(HttpStatus.CONFLICT, "이미 응답한 제안입니다"),
+    PROPOSAL_EXPIRED(HttpStatus.BAD_REQUEST, "만료된 제안입니다"),
+    
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다"); // 예상치 못한 오류
     
     private final HttpStatus status;  // HTTP 상태 코드

@@ -26,7 +26,9 @@ interface User {
   id: number
   email: string
   name: string
-  profileImageUrl?: string  // ?는 optional (있어도 되고 없어도 됨)
+  profileImageUrl?: string
+  userType?: string        // "JOB_SEEKER" | "RECRUITER"
+  companyName?: string     // 헤드헌터일 때만
 }
 
 /**

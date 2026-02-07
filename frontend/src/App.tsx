@@ -35,6 +35,10 @@ import ResumeEditPageNew from '@/pages/private/ResumeEditPageNew'
 import SettingsPage from '@/pages/private/SettingsPage'
 import JobsPage from '@/pages/private/JobsPage'
 import JobDetailPage from '@/pages/private/JobDetailPage'
+import StatisticsPage from '@/pages/private/StatisticsPage'
+import SwipePage from '@/pages/recruiter/SwipePage'
+import MyPicksPage from '@/pages/recruiter/MyPicksPage'
+import ProposalsPage from '@/pages/private/ProposalsPage'
 
 /**
  * 인증 보호 라우트 (Private Route)
@@ -102,6 +106,10 @@ function App() {
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/jobs" element={<JobsPage />} />
         <Route path="/jobs/:id" element={<JobDetailPage />} />
+        <Route path="/statistics" element={<StatisticsPage />} />
+        <Route path="/proposals" element={<ProposalsPage />} />
+        <Route path="/recruiter/swipe" element={<SwipePage />} />
+        <Route path="/recruiter/picks" element={<MyPicksPage />} />
         <Route path="/inbox" element={<InboxPage />} />
         <Route path="/resume/edit" element={<ResumeEditPageNew />} />
         <Route path="/settings" element={<SettingsPage />} />

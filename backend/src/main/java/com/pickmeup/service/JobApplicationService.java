@@ -552,4 +552,106 @@ public class JobApplicationService {
             case OTHER -> "기타";
         };
     }
+
+    // ==================== 통계 ====================
+
+    /**
+     * 취업 활동 통계 조회
+     */
+    public com.pickmeup.dto.job.JobStatisticsDto.Response getStatistics(
+            User user, 
+            java.time.LocalDate startDate, 
+            java.time.LocalDate endDate) {
+        
+        // 기간 설정 (없으면 전체)
+        java.time.LocalDate start = startDate;
+        java.time.LocalDate end = endDate != null ? endDate : java.time.LocalDate.now();
+        
+        // 전체 통계
+        long totalApplications = start != null 
+            ? jobApplicationRepository.countByUserAndDateRange(user, start, end)
+            : jobApplicationRepository.countByUser(user);
+        
+        long activeApplications = jobApplicationRepository.countActiveApplications(user);
+        long completedApplications = jobApplicationRepository.countCompletedApplications(user);
+        
+        java.time.LocalDate firstAppDate = jobApplicationRepository.findFirstApplicationDate(user);
+        java.time.LocalDate lastAppDate = jobApplicationRepository.findLastApplicationDate(user);
+        
+        com.pickmeup.dto.job.JobStatisticsDto.OverallStats overallStats = 
+            com.pickmeup.dto.job.JobStatisticsDto.OverallStats.builder()
+                .totalApplications(totalApplications)
+                .activeApplications(activeApplications)
+                .completedApplications(completedApplications)
+                .firstApplicationDate(firstAppDate)
+                .lastApplicationDate(lastAppDate)
+                .build();
+        
+        // 상태별 통계
+        long interested = jobApplicationRepository.countByUserAndStatus(user, ApplicationStatus.INTERESTED);
+        long applied = jobApplicationRepository.countByUserAndStatus(user, ApplicationStatus.APPLIED);
+        long documentPassed = jobApplicationRepository.countByUserAndStatus(user, ApplicationStatus.DOCUMENT_PASSED);
+        long firstInterview = jobApplicationRepository.countByUserAndStatus(user, ApplicationStatus.FIRST_INTERVIEW);
+        long secondInterview = jobApplicationRepository.countByUserAndStatus(user, ApplicationStatus.SECOND_INTERVIEW);
+        long finalPassed = jobApplicationRepository.countByUserAndStatus(user, ApplicationStatus.FINAL_PASSED);
+        long rejected = jobApplicationRepository.countByUserAndStatus(user, ApplicationStatus.REJECTED);
+        
+        com.pickmeup.dto.job.JobStatisticsDto.StatusStats statusStats = 
+            com.pickmeup.dto.job.JobStatisticsDto.StatusStats.builder()
+                .interested(interested)
+                .applied(applied)
+                .documentPassed(documentPassed)
+                .interviewing(firstInterview + secondInterview)
+                .finalPassed(finalPassed)
+                .rejected(rejected)
+                .build();
+        
+        // 월별 추이
+        List<Object[]> monthlyData = start != null
+            ? jobApplicationRepository.findMonthlyStatsByDateRange(user, start, end)
+            : jobApplicationRepository.findMonthlyStats(user);
+        
+        List<com.pickmeup.dto.job.JobStatisticsDto.MonthlyTrend> monthlyTrends = monthlyData.stream()
+            .map(row -> com.pickmeup.dto.job.JobStatisticsDto.MonthlyTrend.builder()
+                .month((String) row[0])
+                .applicationCount(((Number) row[1]).longValue())
+                .passedCount(((Number) row[2]).longValue())
+                .rejectedCount(((Number) row[3]).longValue())
+                .build())
+            .toList();
+        
+        // 합격률 계산
+        double documentPassRate = applied > 0 ? (double) documentPassed / applied * 100 : 0;
+        double interviewPassRate = (firstInterview + secondInterview) > 0 
+            ? (double) finalPassed / (firstInterview + secondInterview) * 100 : 0;
+        double overallPassRate = applied > 0 ? (double) finalPassed / applied * 100 : 0;
+        
+        com.pickmeup.dto.job.JobStatisticsDto.SuccessRate successRate = 
+            com.pickmeup.dto.job.JobStatisticsDto.SuccessRate.builder()
+                .documentPassRate(documentPassRate)
+                .interviewPassRate(interviewPassRate)
+                .overallPassRate(overallPassRate)
+                .totalApplied(applied)
+                .documentPassed(documentPassed)
+                .finalPassed(finalPassed)
+                .build();
+        
+        // 평균 소요 시간 (현재는 null, 추후 구현 가능)
+        com.pickmeup.dto.job.JobStatisticsDto.AverageTimeline averageTimeline = 
+            com.pickmeup.dto.job.JobStatisticsDto.AverageTimeline.builder()
+                .daysToDocumentResult(null)
+                .daysToInterview(null)
+                .daysToFinalResult(null)
+                .totalDaysToComplete(null)
+                .build();
+        
+        return com.pickmeup.dto.job.JobStatisticsDto.Response.builder()
+                .overallStats(overallStats)
+                .statusStats(statusStats)
+                .monthlyTrends(monthlyTrends)
+                .averageTimeline(averageTimeline)
+                .successRate(successRate)
+                .jobTypeStats(List.of())  // 추후 구현
+                .build();
+    }
 }

@@ -120,6 +120,40 @@ public class User extends BaseEntity {  // BaseEntity: createdAt, updatedAt 상�
     @Builder.Default
     private Boolean isActive = true;
     
+    /**
+     * 사용자 타입 (구직자 or 헤드헌터)
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_type", nullable = false)
+    @Builder.Default
+    private UserType userType = UserType.JOB_SEEKER;
+    
+    // ========== 헤드헌터 전용 필드 ==========
+    
+    /**
+     * 회사명 (헤드헌터일 때만 사용)
+     */
+    @Column(name = "company_name", length = 100)
+    private String companyName;
+    
+    /**
+     * 직급/포지션 (헤드헌터일 때만 사용)
+     */
+    @Column(length = 100)
+    private String position;
+    
+    /**
+     * 부서 (헤드헌터일 때만 사용)
+     */
+    @Column(length = 100)
+    private String department;
+    
+    /**
+     * 회사 이메일 (헤드헌터일 때만 사용)
+     */
+    @Column(name = "business_email", length = 100)
+    private String businessEmail;
+    
     // ========== 비즈니스 메서드 ==========
     // Entity에 비즈니스 로직을 넣으면 객체지향적
     // Service에서 직접 setter 호출하는 것보다 의도가 명확함
@@ -151,5 +185,30 @@ public class User extends BaseEntity {  // BaseEntity: createdAt, updatedAt 상�
      */
     public void updatePassword(String encodedPassword) {
         this.password = encodedPassword;
+    }
+    
+    /**
+     * 헤드헌터 정보 수정
+     */
+    public void updateRecruiterInfo(String companyName, String position, 
+                                     String department, String businessEmail) {
+        this.companyName = companyName;
+        this.position = position;
+        this.department = department;
+        this.businessEmail = businessEmail;
+    }
+    
+    /**
+     * 헤드헌터 여부 확인
+     */
+    public boolean isRecruiter() {
+        return UserType.RECRUITER.equals(this.userType);
+    }
+    
+    /**
+     * 구직자 여부 확인
+     */
+    public boolean isJobSeeker() {
+        return UserType.JOB_SEEKER.equals(this.userType);
     }
 }

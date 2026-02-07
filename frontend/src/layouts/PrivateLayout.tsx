@@ -42,6 +42,9 @@ import {
   CheckSquare,
   Wifi,
   WifiOff,
+  Heart,
+  Users,
+  BarChart3,
 } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
@@ -58,7 +61,14 @@ const navItems = [
   { to: '/jobs', icon: Briefcase, label: '취업관리' },
   { to: '/inbox', icon: Mail, label: '메시지' },
   { to: '/resume/edit', icon: FileText, label: '이력서' },
-  { to: '/settings', icon: Settings, label: '설정' },
+  { to: '/statistics', icon: BarChart3, label: '통계' },
+]
+
+// 헤드헌터 전용 메뉴
+const recruiterNavItems = [
+  { to: '/recruiter/swipe', icon: Heart, label: '인재 발굴', badge: 'NEW' },
+  { to: '/recruiter/picks', icon: Users, label: '픽한 사람들' },
+  { to: '/proposals', icon: Mail, label: '받은 제안' },
 ]
 
 export default function PrivateLayout() {
@@ -140,27 +150,21 @@ export default function PrivateLayout() {
         {/* 네비게이션 메뉴 */}
         <nav className="p-4 space-y-1">
           {navItems.map(({ to, icon: Icon, label }) => (
-            /**
-             * NavLink: 현재 경로와 일치하면 isActive가 true
-             * 
-             * 활성 상태에 따라 다른 스타일 적용
-             */
             <NavLink
               key={to}
               to={to}
-              onClick={() => setSidebarOpen(false)}  // 모바일에서 클릭 시 사이드바 닫기
+              onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors',
                   isActive
-                    ? 'bg-primary-50 text-primary-600'   // 활성 상태
-                    : 'text-gray-600 hover:bg-gray-100'  // 비활성 상태
+                    ? 'bg-primary-50 text-primary-600'
+                    : 'text-gray-600 hover:bg-gray-100'
                 )
               }
             >
               <Icon className="w-5 h-5" />
               <span>{label}</span>
-              {/* 메시지 메뉴에 읽지 않은 개수 뱃지 */}
               {to === '/inbox' && unreadCount > 0 && (
                 <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
                   {unreadCount}
@@ -168,6 +172,80 @@ export default function PrivateLayout() {
               )}
             </NavLink>
           ))}
+          
+          {/* 구분선 */}
+          <div className="pt-4">
+            <div className="border-t my-2"></div>
+            <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              {user?.userType === 'RECRUITER' ? '헤드헌터' : '채용 제안'}
+            </p>
+          </div>
+          
+          {/* 헤드헌터 or 구직자 메뉴 */}
+          {user?.userType === 'RECRUITER' ? (
+            // 헤드헌터용 메뉴
+            <>
+              {recruiterNavItems.map(({ to, icon: Icon, label, badge }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={() => setSidebarOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors',
+                      isActive
+                        ? 'bg-purple-50 text-purple-600'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    )
+                  }
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{label}</span>
+                  {badge && (
+                    <span className="ml-auto bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {badge}
+                    </span>
+                  )}
+                </NavLink>
+              ))}
+            </>
+          ) : (
+            // 구직자용 메뉴 (받은 제안만)
+            <NavLink
+              to="/proposals"
+              onClick={() => setSidebarOpen(false)}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors',
+                  isActive
+                    ? 'bg-purple-50 text-purple-600'
+                    : 'text-gray-600 hover:bg-gray-100'
+                )
+              }
+            >
+              <Mail className="w-5 h-5" />
+              <span>받은 제안</span>
+            </NavLink>
+          )}
+          
+          {/* 설정 */}
+          <div className="pt-2">
+            <NavLink
+              to="/settings"
+              onClick={() => setSidebarOpen(false)}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors',
+                  isActive
+                    ? 'bg-primary-50 text-primary-600'
+                    : 'text-gray-600 hover:bg-gray-100'
+                )
+              }
+            >
+              <Settings className="w-5 h-5" />
+              <span>설정</span>
+            </NavLink>
+          </div>
         </nav>
 
         {/* 사이드바 푸터 (사용자 정보 + 로그아웃) */}

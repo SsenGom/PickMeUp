@@ -21,6 +21,13 @@ public class AuthDto {
         
         @NotBlank(message = "이름은 필수입니다")
         private String name;
+        
+        // 헤드헌터용 추가 필드 (선택)
+        private String userType;        // "JOB_SEEKER" or "RECRUITER"
+        private String companyName;     // 헤드헌터일 때만
+        private String position;        // 헤드헌터일 때만
+        private String department;      // 헤드헌터일 때만
+        private String businessEmail;   // 헤드헌터일 때만
     }
     
     @Getter
@@ -55,6 +62,8 @@ public class AuthDto {
         private String email;
         private String name;
         private String profileImageUrl;
+        private String userType;         // 사용자 타입
+        private String companyName;      // 헤드헌터일 때
     }
     
     @Getter

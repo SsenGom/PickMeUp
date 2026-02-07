@@ -43,20 +43,33 @@
 - 지원 상태 추적 (준비 중/지원 완료/서류 합격/면접/합격/불합격)
 - 마감일 D-day 표시
 - AI 면접 질문 생성 (OpenAI GPT)
+- **📊 취업 활동 통계**: 월별 지원 현황, 합격률, 상태별 분석
 
 ### 🤖 AI 면접 준비
 - 이력서 + 채용공고 기반 맞춤 면접 질문 생성
 - 기술 면접 / 인성 면접 질문 분리
 - 예상 질문 및 모범 답변 제공
+- 이미지 OCR을 통한 채용공고 텍스트 추출
 
 ### 📬 메시지 (Inbox)
 - 외부 연락처 관리
 - 메시지 스레드 방식
 - WebSocket 실시간 알림
+- **✉️ HTML 이메일 템플릿**: 답장 시 이쁜 이메일 발송
+- **📱 카카오톡/SMS 알림**: 신규 메시지, 면접 일정, 서류 마감 알림
+
+### 💼 헤드헌터 모드 (신규!)
+- **👉 이력서 스와이프**: Tinder처럼 공개 이력서 스와이프
+- **❤️ Pick 시스템**: 마음에 드는 인재 저장
+- **📧 컨택 제안**: 픽한 인재에게 면접 제안 발송
+- **💬 1:1 채팅**: 제안 수락 시 자동 채팅방 생성
+- **📊 통계**: 픽/제안 성공률 분석
 
 ### 🔔 알림
 - 마감일 임박 알림
 - 일정 알림
+- **신규 픽 알림**: 누군가 나를 픽했을 때
+- **제안 알림**: 면접 제안이 왔을 때
 - 실시간 WebSocket 푸시
 
 ---
@@ -216,8 +229,24 @@ REDIS_PORT=6379
 # JWT
 JWT_SECRET=your-super-secret-key-at-least-256-bits
 
-# OpenAI (선택)
+# OpenAI (AI 기능)
 OPENAI_API_KEY=sk-your-openai-api-key
+
+# 카카오톡 알림 (선택)
+KAKAO_SENDER_KEY=your-kakao-sender-key
+KAKAO_NOTIFICATION_ENABLED=false
+
+# SMS 알림 (선택 - NCP SENS)
+NCP_SENS_SERVICE_ID=your-service-id
+NCP_SENS_ACCESS_KEY=your-access-key
+NCP_SENS_SECRET_KEY=your-secret-key
+NCP_SENS_FROM_NUMBER=01012345678
+NCP_SENS_ENABLED=false
+
+# SMTP 이메일 (선택)
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+MAIL_ENABLED=false
 ```
 
 ### 3. Docker로 인프라 실행
@@ -400,8 +429,34 @@ Client → GET /api/tasks + Header: "Authorization: Bearer {token}"
 |--------|----------|------|
 | GET | `/api/jobs` | 채용공고 목록 |
 | POST | `/api/jobs` | 채용공고 등록 |
+| GET | `/api/jobs/statistics` | **📊 취업 활동 통계** |
 | POST | `/api/jobs/{id}/parse` | URL 자동 파싱 |
 | POST | `/api/jobs/{id}/interview-prep` | AI 면접 준비 |
+
+#### 메시지
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| GET | `/api/messages/threads` | 메시지 스레드 목록 |
+| GET | `/api/messages/threads/{id}` | 스레드 상세 |
+| POST | `/api/messages/threads/{id}/reply` | **✉️ 답장 (HTML 이메일)** |
+
+#### 헤드헌터 (신규!)
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| GET | `/api/recruiter/feed` | **👉 이력서 스와이프 피드** |
+| POST | `/api/recruiter/pick/{resumeId}` | **❤️ 이력서 Pick** |
+| GET | `/api/recruiter/picks` | 내가 픽한 사람들 |
+| POST | `/api/recruiter/proposal/{resumeId}` | **📧 컨택 제안 보내기** |
+| GET | `/api/recruiter/proposals` | 내가 보낸 제안 목록 |
+| GET | `/api/recruiter/statistics` | 헤드헌터 통계 |
+
+#### 제안 (구직자용)
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| GET | `/api/proposals` | **받은 면접 제안** |
+| POST | `/api/proposals/{id}/accept` | 제안 수락 |
+| POST | `/api/proposals/{id}/reject` | 제안 거절 |
+| GET | `/api/proposals/pick-stats` | **내 이력서 픽 통계** |
 
 ---
 

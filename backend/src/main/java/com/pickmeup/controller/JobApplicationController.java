@@ -245,4 +245,17 @@ public class JobApplicationController {
     public ApiResponse<AIUsageResponse> getAIUsageStatus(@CurrentUser User user) {
         return ApiResponse.success(jobApplicationService.getAIUsageStatus(user));
     }
+
+    // ==================== 통계 ====================
+
+    /**
+     * 취업 활동 통계 조회
+     */
+    @GetMapping("/statistics")
+    public ApiResponse<com.pickmeup.dto.job.JobStatisticsDto.Response> getStatistics(
+            @CurrentUser User user,
+            @RequestParam(required = false) java.time.LocalDate startDate,
+            @RequestParam(required = false) java.time.LocalDate endDate) {
+        return ApiResponse.success(jobApplicationService.getStatistics(user, startDate, endDate));
+    }
 }

@@ -129,6 +129,24 @@ public class Resume extends BaseEntity {
     @Column(name = "youtube_url", length = 200)
     private String youtubeUrl;
     
+    // ========== 관계 (사람인 양식용) ==========
+    
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private java.util.List<com.pickmeup.domain.resume.Experience> experiences = new java.util.ArrayList<>();
+    
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private java.util.List<com.pickmeup.domain.resume.Education> educations = new java.util.ArrayList<>();
+    
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private java.util.List<com.pickmeup.domain.resume.Skill> skills = new java.util.ArrayList<>();
+    
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private java.util.List<com.pickmeup.domain.resume.Project> projects = new java.util.ArrayList<>();
+    
     public void updateBasicInfo(String name, String email, String phone, 
                                  String birthDate, String gender, String address,
                                  String profileImageUrl, String bio) {

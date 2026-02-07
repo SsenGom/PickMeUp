@@ -57,20 +57,29 @@ public class AuthService {
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         }
         
-        // 2. 사용자 Entity 생성
+        // 2. userType 파싱 (기본값: JOB_SEEKER)
+        com.pickmeup.domain.user.UserType userType = com.pickmeup.domain.user.UserType.JOB_SEEKER;
+        if (request.getUserType() != null && request.getUserType().equalsIgnoreCase("RECRUITER")) {
+            userType = com.pickmeup.domain.user.UserType.RECRUITER;
+        }
+        
+        // 3. 사용자 Entity 생성
         User user = User.builder()
                 .email(request.getEmail())
-                // 비밀번호 암호화 (평문 -> BCrypt 해시)
-                // "1234" -> "$2a$10$N9qo8uLOickgx2ZMRZoMy..."
-                // 단방향이라 복호화 불가. 검증 시 matches() 사용
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
+                .userType(userType)
+                // 헤드헌터 정보 (있으면)
+                .companyName(request.getCompanyName())
+                .position(request.getPosition())
+                .department(request.getDepartment())
+                .businessEmail(request.getBusinessEmail())
                 .build();
         
-        // 3. DB 저장
+        // 4. DB 저장
         userRepository.save(user);
         
-        // 4. JWT 토큰 생성해서 응답
+        // 5. JWT 토큰 생성해서 응답
         return createTokenResponse(user);
     }
     
@@ -151,6 +160,8 @@ public class AuthService {
                         .email(user.getEmail())
                         .name(user.getName())
                         .profileImageUrl(user.getProfileImageUrl())
+                        .userType(user.getUserType().name())
+                        .companyName(user.getCompanyName())
                         .build())
                 .build();
     }

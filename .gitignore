@@ -1,77 +1,71 @@
-# =====================
-# Compiled / Build
-# =====================
-*.class
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
+# ==================== OS ====================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
 
-# =====================
-# Logs
-# =====================
-*.log
-logs/
-log/
-
-# =====================
-# IDE
-# =====================
+# ==================== IDE ====================
 .idea/
+.vscode/
 *.iml
 *.iws
-.vscode/
+*.ipr
 
-# =====================
-# Gradle / Maven
-# =====================
-.gradle/
-build/
-out/
-target/
-!gradle/wrapper/gradle-wrapper.jar
+# ==================== Backend (Java/Gradle) ====================
+backend/build/
+backend/.gradle/
+backend/out/
+backend/bin/
+backend/*.jar
+backend/*.war
+backend/*.ear
+backend/.settings/
+backend/.classpath
+backend/.project
 
-# =====================
-# Node / React
-# =====================
-node_modules/
-dist/
-.next/
-.vite/
+# ==================== Frontend (Node) ====================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/.nuxt/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/coverage/
+frontend/*.log
+frontend/.env.local
+frontend/.env.*.local
 
-# =====================
-# Spring Boot secrets (backend)
-backend/src/main/resources/application-*.yml
-backend/src/main/resources/application-*.yaml
-
-
-# =====================
-# Environment
-# =====================
+# ==================== Environment ====================
 .env
 .env.local
 .env.*.local
+.env.production
+*.pem
+*.key
 
-# =====================
-# Local DB / Data
-# =====================
-*.db
-*.sqlite
-data/
+# ==================== Docker ====================
+docker-compose.override.yml
 
-# =====================
-# OS
-# =====================
-.DS_Store
-Thumbs.db
+# ==================== Logs ====================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# =====================
-# Docker
-# =====================
-docker/data/
+# ==================== Test ====================
+coverage/
+.nyc_output/
+test-results/
+junit.xml
 
-# =====================
-# Jenkins
-# =====================
-.jenkins/
+# ==================== Misc ====================
+*.pid
+*.seed
+*.pid.lock
+.npm
+.yarn/
+temp/
+tmp/

@@ -60,6 +60,18 @@ jwt:
 kakao:
   rest-api-key: ${KAKAO_REST_API_KEY:}
   redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:3000/auth/kakao/callback}
+  sender-key: ${KAKAO_SENDER_KEY:}
+  notification:
+    enabled: ${KAKAO_NOTIFICATION_ENABLED:false}
+
+# NCP SENS (SMS 서비스)
+ncp:
+  sens:
+    service-id: ${NCP_SENS_SERVICE_ID:}
+    access-key: ${NCP_SENS_ACCESS_KEY:}
+    secret-key: ${NCP_SENS_SECRET_KEY:}
+    from-number: ${NCP_SENS_FROM_NUMBER:}
+    enabled: ${NCP_SENS_ENABLED:false}
 
 openai:
   api-key: ${OPENAI_API_KEY:}
