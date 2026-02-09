@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # ==================== MySQL ====================
+  mysql:
+    image: mysql:8.0
+    container_name: pickmeup-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: pickmeup
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Seoul
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./backend/src/main/resources/db/migration:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - pickmeup-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ==================== Redis ====================
+  redis:
+    image: redis:7-alpine
+    container_name: pickmeup-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - pickmeup-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # ==================== Backend ====================
+  backend:
+    image: ${DOCKER_HUB_USERNAME}/pickmeup-backend:${VERSION:-latest}
+    container_name: pickmeup-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-prod}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/pickmeup?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - pickmeup-network
+    restart: unless-stopped
+
+  # ==================== Frontend ====================
+  frontend:
+    image: ${DOCKER_HUB_USERNAME}/pickmeup-frontend:${VERSION:-latest}
+    container_name: pickmeup-frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    networks:
+      - pickmeup-network
+    restart: unless-stopped
+
+# ==================== Volumes ====================
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
+
+# ==================== Networks ====================
+networks:
+  pickmeup-network:
+    driver: bridge

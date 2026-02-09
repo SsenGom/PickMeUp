@@ -1,0 +1,68 @@
+// ==================== 간단한 Jenkinsfile (시작용) ====================
+// Windows + Docker Desktop 환경에서 동작
+// 복잡한 기능 없이 빌드 & 테스트만 수행
+
+pipeline {
+    agent any
+    
+    tools {
+        jdk 'JDK17'
+        nodejs 'NodeJS18'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo '📦 Checking out code...'
+                checkout scm
+            }
+        }
+        
+        stage('Backend Test') {
+            steps {
+                dir('backend') {
+                    echo '🧪 Testing Backend...'
+                    script {
+                        if (isUnix()) {
+                            sh 'chmod +x gradlew'
+                            sh './gradlew test'
+                        } else {
+                            bat 'gradlew.bat test'
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    junit 'backend/build/test-results/test/*.xml'
+                }
+            }
+        }
+        
+        stage('Frontend Build') {
+            steps {
+                dir('frontend') {
+                    echo '🔨 Building Frontend...'
+                    script {
+                        if (isUnix()) {
+                            sh 'npm ci'
+                            sh 'npm run build'
+                        } else {
+                            bat 'npm ci'
+                            bat 'npm run build'
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '✅ Build succeeded!'
+        }
+        failure {
+            echo '❌ Build failed!'
+        }
+    }
+}

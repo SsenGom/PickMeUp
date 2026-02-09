@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: pickmeup-jenkins
+    privileged: true
+    user: root
+    ports:
+      - "8081:8080"      # Jenkins UI
+      - "50000:50000"    # Jenkins Agent
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker-in-Docker
+      - ./jenkins-config:/var/jenkins_config
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    networks:
+      - pickmeup-network
+    restart: unless-stopped
+
+  # Jenkins Agent (선택)
+  jenkins-agent:
+    image: jenkins/inbound-agent:latest-jdk17
+    container_name: pickmeup-jenkins-agent
+    privileged: true
+    environment:
+      - JENKINS_URL=http://jenkins:8080
+      - JENKINS_AGENT_NAME=agent1
+      - JENKINS_SECRET=${JENKINS_AGENT_SECRET}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - pickmeup-network
+    depends_on:
+      - jenkins
+    restart: unless-stopped
+
+volumes:
+  jenkins-data:
+    driver: local
+
+networks:
+  pickmeup-network:
+    driver: bridge
