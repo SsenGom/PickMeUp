@@ -65,7 +65,7 @@ public class Project extends BaseEntity {
     @Column(name = "github_url", length = 200)
     private String githubUrl;
     
-    @Column(name = "thumbnail_url", length = 500)
+    @Column(name = "thumbnail_url", columnDefinition = "TEXT")
     private String thumbnailUrl;
     
     @ElementCollection

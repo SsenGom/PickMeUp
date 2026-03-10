@@ -48,6 +48,7 @@ public class ResumeDto {
     @AllArgsConstructor
     public static class UpdateSettingsRequest {
         private ResumeType resumeType;
+        private LayoutType layoutType;
         private Boolean isPublic;
         private String slug;
     }
@@ -60,11 +61,15 @@ public class ResumeDto {
         private String schoolName;
         private String major;
         private EducationLevel level;
+        private String institutionType;  // SCHOOL, TRAINING, ONLINE
         private String startDate;
         private String endDate;
         private GraduationStatus graduationStatus;
         private String gpa;
         private String maxGpa;
+        // 교육/훈련 기관용 추가 필드
+        private String courseName;       // 과정명
+        private String instructor;       // 강사/기관
     }
     
     @Getter
@@ -157,6 +162,7 @@ public class ResumeDto {
     public static class Response {
         private Long id;
         private ResumeType resumeType;
+        private LayoutType layoutType;
         private String title;
         
         // 기본 정보
@@ -202,6 +208,7 @@ public class ResumeDto {
             return Response.builder()
                     .id(resume.getId())
                     .resumeType(resume.getResumeType())
+                    .layoutType(resume.getLayoutType())
                     .title(resume.getTitle())
                     .name(resume.getName() != null ? resume.getName() : resume.getUser().getName())
                     .email(resume.getEmail() != null ? resume.getEmail() : resume.getUser().getEmail())
@@ -293,24 +300,30 @@ public class ResumeDto {
         private String schoolName;
         private String major;
         private EducationLevel level;
+        private String institutionType;
         private String startDate;
         private String endDate;
         private GraduationStatus graduationStatus;
         private String gpa;
         private String maxGpa;
+        private String courseName;
+        private String instructor;
         private Integer displayOrder;
-        
+
         public static EducationResponse from(Education education) {
             return EducationResponse.builder()
                     .id(education.getId())
                     .schoolName(education.getSchoolName())
                     .major(education.getMajor())
                     .level(education.getLevel())
+                    .institutionType(education.getInstitutionType())
                     .startDate(education.getStartDate())
                     .endDate(education.getEndDate())
                     .graduationStatus(education.getGraduationStatus())
                     .gpa(education.getGpa())
                     .maxGpa(education.getMaxGpa())
+                    .courseName(education.getCourseName())
+                    .instructor(education.getInstructor())
                     .displayOrder(education.getDisplayOrder())
                     .build();
         }

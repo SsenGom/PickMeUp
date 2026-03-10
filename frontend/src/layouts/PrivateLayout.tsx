@@ -74,17 +74,15 @@ const recruiterNavItems = [
 export default function PrivateLayout() {
   // 모바일 사이드바 열림 상태
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isWebSocketConnected, setIsWebSocketConnected] = useState(false)
   
   // 전역 인증 상태에서 사용자 정보와 로그아웃 함수
-  const { user, logout } = useAuthStore()
+  const { user, logout, unreadMessageCount, setUnreadMessageCount } = useAuthStore()
   const navigate = useNavigate()
   
   // 전역 알림 상태 (WebSocket에서 업데이트)
-  const { 
-    unreadMessageCount, 
-    setUnreadMessageCount,
-    isWebSocketConnected 
-  } = useNotificationStore()
+  const notifications = useNotificationStore((state) => state.notifications)
+  const notificationUnreadCount = useNotificationStore((state) => state.unreadCount)
 
   /**
    * 읽지 않은 메시지 개수 조회
@@ -108,8 +106,8 @@ export default function PrivateLayout() {
     }
   }, [unreadCountFromApi, setUnreadMessageCount])
   
-  // 실제 표시할 읽지 않은 메시지 수 (스토어에서 가져옴)
-  const unreadCount = unreadMessageCount
+  // 실제 표시할 읽지 않은 메시지 수 (authStore에서 가져옴)
+  const unreadCount = unreadMessageCount || 0
 
   /**
    * 로그아웃 처리

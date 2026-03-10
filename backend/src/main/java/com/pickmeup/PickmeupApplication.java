@@ -2,6 +2,9 @@ package com.pickmeup;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -11,10 +14,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * 
  * Spring Boot 애플리케이션은 이 main() 메서드에서 시작됨
  */
-@SpringBootApplication  // = @Configuration + @EnableAutoConfiguration + @ComponentScan
-                        // @Configuration: 이 클래스가 설정 파일임을 표시
-                        // @EnableAutoConfiguration: 의존성 기반으로 자동 설정 (예: JPA 있으면 DataSource 자동 설정)
-                        // @ComponentScan: 현재 패키지(com.pickmeup) 하위의 모든 @Component 찾아서 Bean 등록
+@SpringBootApplication(exclude = {
+        MongoAutoConfiguration.class,
+        MongoDataAutoConfiguration.class,
+        MongoRepositoriesAutoConfiguration.class
+})
 
 @EnableJpaAuditing      // JPA Auditing 활성화
                         // @CreatedDate, @LastModifiedDate 어노테이션이 자동으로 날짜 채워줌
@@ -39,6 +43,9 @@ public class PickmeupApplication {
      * 4. 내장 Tomcat 서버 시작 (기본 포트 8080)
      */
     public static void main(String[] args) {
-        SpringApplication.run(PickmeupApplication.class, args);
+        var ctx = SpringApplication.run(PickmeupApplication.class, args);
+        String openaiKey = ctx.getEnvironment().getProperty("openai.api-key");
+        System.out.println("=== OPENAI KEY CHECK: " + 
+            (openaiKey == null || openaiKey.isBlank() ? "❌ 비어있음" : "✅ 로드됨 (" + openaiKey.substring(0, 10) + "...)"));
     }
 }

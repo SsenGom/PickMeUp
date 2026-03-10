@@ -4,7 +4,7 @@ import com.pickmeup.domain.message.Message;
 import com.pickmeup.domain.message.MessageDirection;
 import com.pickmeup.domain.message.Thread;
 import com.pickmeup.domain.message.ThreadStatus;
-import com.pickmeup.domain.mongo.MessageRaw;
+import com.pickmeup.domain.message.MessageRaw;
 import com.pickmeup.domain.user.User;
 import com.pickmeup.dto.message.MessageDto.*;
 import com.pickmeup.exception.BusinessException;
@@ -12,7 +12,7 @@ import com.pickmeup.exception.ErrorCode;
 import com.pickmeup.repository.MessageRepository;
 import com.pickmeup.repository.ResumeRepository;
 import com.pickmeup.repository.ThreadRepository;
-import com.pickmeup.repository.mongo.MessageRawRepository;
+import com.pickmeup.repository.MessageRawRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -103,17 +103,17 @@ public class MessageService {
                         .build());
         
         // 카카오톡 알림 (이력서 소유자 휴대폰 번호가 있는 경우)
-        if (owner.getPhoneNumber() != null && !owner.getPhoneNumber().isEmpty()) {
+        if (owner.getPhone() != null && !owner.getPhone().isEmpty()) {
             // 카카오톡 우선, 실패 시 SMS
             if (kakaoService.isConfigured()) {
                 kakaoService.sendNewMessageNotification(
-                    owner.getPhoneNumber(),
+                    owner.getPhone(),
                     request.getSenderName(),
                     request.getSubject()
                 );
             } else if (smsService.isConfigured()) {
                 smsService.sendNewMessageNotification(
-                    owner.getPhoneNumber(),
+                    owner.getPhone(),
                     request.getSenderName(),
                     request.getSubject()
                 );
@@ -192,7 +192,8 @@ public class MessageService {
             
             helper.setFrom(fromEmail);
             helper.setTo(thread.getSenderEmail());
-            helper.setSubject("Re: " + (thread.getSubject() != null ? thread.getSubject() : "메시지"));
+            String senderName = user.getName() != null ? user.getName() : user.getEmail();
+            helper.setSubject(senderName + " 님께서 회원님의 제안에 답변을 남기셨습니다");
             helper.setText(buildReplyEmailContentHtml(user, content, thread), true);
             
             mailSender.send(helper.getMimeMessage());
@@ -333,7 +334,7 @@ public class MessageService {
                 .senderName(proposal.getCompanyName())
                 .senderEmail(recruiter.getEmail())
                 .subject(subject)
-                .isRead(false)
+                .status(ThreadStatus.UNREAD)
                 .build();
         
         threadRepository.save(thread);
@@ -341,7 +342,6 @@ public class MessageService {
         // 초기 시스템 메시지
         Message systemMessage = Message.builder()
                 .thread(thread)
-                .sender(null)  // 시스템 메시지
                 .content(String.format(
                     "💼 %s에서 %s 포지션으로 면접을 제안했습니다.\n\n" +
                     "급여: %s\n" +
@@ -353,7 +353,6 @@ public class MessageService {
                     proposal.getLocation() != null ? proposal.getLocation() : "미정"
                 ))
                 .direction(MessageDirection.INBOUND)
-                .isRead(false)
                 .build();
         
         messageRepository.save(systemMessage);

@@ -59,16 +59,19 @@ public enum ErrorCode {
     // ========== 이력서 관련 ==========
     RESUME_NOT_FOUND(HttpStatus.NOT_FOUND, "이력서를 찾을 수 없습니다"),
     SLUG_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 슬러그입니다"),
+    DUPLICATE_SLUG(HttpStatus.CONFLICT, "이미 사용 중인 슬러그입니다"),
     
     // ========== 공통 ==========
     NOT_FOUND(HttpStatus.NOT_FOUND, "리소스를 찾을 수 없습니다"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다"),                // 다른 사용자의 리소스 접근 시도
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 입력입니다"),                 // 입력값 오류
     FILE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "파일 업로드에 실패했습니다"),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 저장 중 오류가 발생했습니다"),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다"),
     
     // ========== AI 관련 ==========
     AI_DAILY_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "오늘의 AI 사용 횟수를 초과했습니다 (하루 5회)"),
+    AI_USAGE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "오늘의 AI 사용 횟수를 초과했습니다 (하루 3회)"),
     AI_SERVICE_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "AI 서비스 오류가 발생했습니다"),
     AI_API_KEY_NOT_CONFIGURED(HttpStatus.SERVICE_UNAVAILABLE, "AI 서비스가 설정되지 않았습니다"),
     
