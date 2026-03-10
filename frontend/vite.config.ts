@@ -65,7 +65,7 @@ export default defineConfig({
      * 프록시 설정
      * 
      * CORS 문제 해결용
-     * sss
+     * 
      * 문제:
      * Frontend (localhost:3000) → Backend (localhost:8080)
      * 브라우저 보안 정책으로 차단됨 (Cross-Origin)

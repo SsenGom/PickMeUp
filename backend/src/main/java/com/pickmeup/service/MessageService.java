@@ -4,7 +4,7 @@ import com.pickmeup.domain.message.Message;
 import com.pickmeup.domain.message.MessageDirection;
 import com.pickmeup.domain.message.Thread;
 import com.pickmeup.domain.message.ThreadStatus;
-import com.pickmeup.domain.mongo.MessageRaw;
+import com.pickmeup.domain.message.MessageRaw;
 import com.pickmeup.domain.user.User;
 import com.pickmeup.dto.message.MessageDto.*;
 import com.pickmeup.exception.BusinessException;
@@ -12,7 +12,7 @@ import com.pickmeup.exception.ErrorCode;
 import com.pickmeup.repository.MessageRepository;
 import com.pickmeup.repository.ResumeRepository;
 import com.pickmeup.repository.ThreadRepository;
-import com.pickmeup.repository.mongo.MessageRawRepository;
+import com.pickmeup.repository.MessageRawRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -192,7 +192,8 @@ public class MessageService {
             
             helper.setFrom(fromEmail);
             helper.setTo(thread.getSenderEmail());
-            helper.setSubject("Re: " + (thread.getSubject() != null ? thread.getSubject() : "메시지"));
+            String senderName = user.getName() != null ? user.getName() : user.getEmail();
+            helper.setSubject(senderName + " 님께서 회원님의 제안에 답변을 남기셨습니다");
             helper.setText(buildReplyEmailContentHtml(user, content, thread), true);
             
             mailSender.send(helper.getMimeMessage());

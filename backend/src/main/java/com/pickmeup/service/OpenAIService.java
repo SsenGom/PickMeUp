@@ -288,7 +288,7 @@ public class OpenAIService {
             headers.setBearerAuth(apiKey);
 
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "gpt-3.5-turbo");
+            requestBody.put("model", "gpt-4o-mini");
             requestBody.put("messages", List.of(
                 Map.of("role", "system", "content", systemPrompt),
                 Map.of("role", "user", "content", userPrompt)

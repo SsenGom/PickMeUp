@@ -26,6 +26,12 @@ public class Resume extends BaseEntity {
     @Column(name = "resume_type", length = 20)
     @Builder.Default
     private ResumeType resumeType = ResumeType.SARAMIN;
+
+    // 레이아웃 타입: LAYOUT_1(기본형), LAYOUT_2(심플형), LAYOUT_3(모던형)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "layout_type", length = 20)
+    @Builder.Default
+    private LayoutType layoutType = LayoutType.LAYOUT_1;
     
     @Column(length = 100)
     private String title;
@@ -49,7 +55,7 @@ public class Resume extends BaseEntity {
     @Column(length = 200)
     private String address;
     
-    @Column(name = "profile_image_url", length = 500)
+    @Column(name = "profile_image_url", columnDefinition = "TEXT")
     private String profileImageUrl;
     
     // ========== 자유양식 전용 ==========
@@ -176,6 +182,10 @@ public class Resume extends BaseEntity {
     
     public void setResumeType(ResumeType resumeType) {
         this.resumeType = resumeType;
+    }
+
+    public void setLayoutType(LayoutType layoutType) {
+        this.layoutType = layoutType;
     }
     
     public void setPublic(boolean isPublic) {

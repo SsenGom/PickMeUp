@@ -1,471 +1,477 @@
-# PickMeUp 🚀
+# 🎯 PickMeUp - 취업 준비 통합 관리 플랫폼
 
-> 취업 준비생을 위한 올인원 개인 생산성 플랫폼
-
-캘린더, 할 일 관리, 이력서, 채용공고 관리, AI 면접 준비까지 취업 준비에 필요한 모든 기능을 하나의 플랫폼에서 제공합니다.
+> 지원서 관리부터 AI 면접 준비, 이력서 공개까지 - 취업 준비의 모든 것을 한 곳에서
 
 ---
 
-## 📋 목차
+## 📌 목차
 
-- [주요 기능](#-주요-기능)
-- [기술 스택](#-기술-스택)
-- [프로젝트 구조](#-프로젝트-구조)
-- [시작하기](#-시작하기)
-- [아키텍처](#-아키텍처)
-- [API 문서](#-api-문서)
-
----
-
-## ✨ 주요 기능
-
-### 📅 캘린더
-- 일정 등록/수정/삭제
-- 반복 일정 지원 (매일/매주/매월/매년)
-- 드래그 앤 드롭으로 일정 이동
-- 월간/주간 뷰
-
-### ✅ 할 일 관리
-- 할 일 CRUD
-- 우선순위 설정 (긴급/높음/보통/낮음)
-- 상태 관리 (할 일/진행 중/완료/취소)
-- 마감일 및 마감 알림
-- 카테고리 분류
-
-### 📄 이력서
-- 온라인 이력서 작성 및 공개
-- 경력, 프로젝트, 기술 스택 관리
-- 공개 URL 슬러그 설정 (`/resume/your-name`)
-- 실시간 미리보기
-
-### 💼 채용공고 관리
-- 채용공고 URL 등록 시 자동 파싱 (Jsoup)
-- 지원 상태 추적 (준비 중/지원 완료/서류 합격/면접/합격/불합격)
-- 마감일 D-day 표시
-- AI 면접 질문 생성 (OpenAI GPT)
-- **📊 취업 활동 통계**: 월별 지원 현황, 합격률, 상태별 분석
-
-### 🤖 AI 면접 준비
-- 이력서 + 채용공고 기반 맞춤 면접 질문 생성
-- 기술 면접 / 인성 면접 질문 분리
-- 예상 질문 및 모범 답변 제공
-- 이미지 OCR을 통한 채용공고 텍스트 추출
-
-### 📬 메시지 (Inbox)
-- 외부 연락처 관리
-- 메시지 스레드 방식
-- WebSocket 실시간 알림
-- **✉️ HTML 이메일 템플릿**: 답장 시 이쁜 이메일 발송
-- **📱 카카오톡/SMS 알림**: 신규 메시지, 면접 일정, 서류 마감 알림
-
-### 💼 헤드헌터 모드 (신규!)
-- **👉 이력서 스와이프**: Tinder처럼 공개 이력서 스와이프
-- **❤️ Pick 시스템**: 마음에 드는 인재 저장
-- **📧 컨택 제안**: 픽한 인재에게 면접 제안 발송
-- **💬 1:1 채팅**: 제안 수락 시 자동 채팅방 생성
-- **📊 통계**: 픽/제안 성공률 분석
-
-### 🔔 알림
-- 마감일 임박 알림
-- 일정 알림
-- **신규 픽 알림**: 누군가 나를 픽했을 때
-- **제안 알림**: 면접 제안이 왔을 때
-- 실시간 WebSocket 푸시
+- [프로젝트 개요](#프로젝트-개요)
+- [기술 스택](#기술-스택)
+- [시스템 아키텍처](#시스템-아키텍처)
+- [서비스 플로우차트](#서비스-플로우차트)
+- [시퀀스 다이어그램](#시퀀스-다이어그램)
+- [도메인 객체 구조](#도메인-객체-구조)
+- [DB 스키마 구조](#db-스키마-구조)
+- [브랜치 전략](#브랜치-전략)
+- [환경 설정](#환경-설정)
+- [실행 방법](#실행-방법)
 
 ---
 
-## 🛠 기술 스택
+## 프로젝트 개요
+
+PickMeUp은 취업 준비생을 위한 올인원 플랫폼입니다.
+
+| 기능 | 설명 |
+|------|------|
+| 📋 지원 현황 관리 | 기업별 지원 상태, 일정, 서류 통합 관리 |
+| 🤖 AI 면접/자소서 준비 | GPT 기반 예상 질문 및 모범 답변 생성 |
+| 📄 이력서 빌더 | 공개 이력서 생성 및 slug URL 공유 |
+| 💬 메시지함 | 채용 담당자와의 1:1 메시지 및 이메일 연동 |
+| 📅 캘린더 | 면접·과제 일정 통합 관리 |
+| ✅ 할 일 관리 | 취업 준비 태스크 트래킹 |
+| 🔔 알림 | 웹소켓 실시간 알림 + 카카오/SMS |
+
+---
+
+## 기술 스택
 
 ### Backend
-| 기술 | 버전 | 용도 |
-|------|------|------|
-| **Java** | 17 | 메인 언어 |
-| **Spring Boot** | 3.2.5 | 웹 프레임워크 |
-| **Spring Security** | - | 인증/인가 |
-| **Spring Data JPA** | - | ORM |
-| **Spring Data MongoDB** | - | NoSQL (AI 대화 기록) |
-| **Spring Data Redis** | - | 캐싱, 세션 |
-| **Spring WebSocket** | - | 실시간 통신 |
-| **JWT (jjwt)** | 0.12.5 | 토큰 인증 |
-| **MySQL** | 8.0 | 메인 DB |
-| **MongoDB** | 7.0 | AI 대화 저장 |
-| **Redis** | 7 | 캐싱 |
-| **OpenAI API** | - | AI 면접 준비 |
-| **Jsoup** | 1.17.2 | 채용공고 크롤링 |
-| **Swagger** | 2.4.0 | API 문서 |
+| 분류 | 기술 |
+|------|------|
+| Framework | Spring Boot 3.2.5 (Java 17) |
+| ORM | Spring Data JPA + Hibernate |
+| Security | Spring Security + JWT |
+| Database | MySQL 8.0 |
+| Cache | Redis |
+| File Upload | Cloudinary |
+| 실시간 통신 | WebSocket (STOMP) |
+| AI | OpenAI GPT-4o-mini |
+| 비동기 처리 | Spring @Async |
+| AOP | Spring AOP (Logging, Performance) |
 
 ### Frontend
-| 기술 | 버전 | 용도 |
-|------|------|------|
-| **React** | 18.2 | UI 라이브러리 |
-| **TypeScript** | 5.3 | 정적 타입 |
-| **Vite** | 5.0 | 빌드 도구 |
-| **React Router** | 6.22 | 라우팅 |
-| **TanStack Query** | 5.17 | 서버 상태 관리 |
-| **Zustand** | 4.5 | 전역 상태 관리 |
-| **Tailwind CSS** | 3.4 | 스타일링 |
-| **React Hook Form** | 7.49 | 폼 관리 |
-| **Zod** | 3.22 | 유효성 검증 |
-| **Axios** | 1.6 | HTTP 클라이언트 |
-| **STOMP.js** | 7.0 | WebSocket 클라이언트 |
-| **Tiptap** | 3.17 | 리치 텍스트 에디터 |
-
-### Infrastructure
-| 기술 | 용도 |
+| 분류 | 기술 |
 |------|------|
-| **Docker** | 컨테이너화 |
-| **Docker Compose** | 로컬 개발 환경 |
-| **Nginx** | 리버스 프록시 |
+| Framework | React 18 + TypeScript |
+| Build | Vite |
+| Styling | Tailwind CSS |
+| State | Zustand |
+| Form | React Hook Form + Zod |
+| HTTP | Axios |
+| Diagram | Mermaid.js |
+| Editor | TipTap |
+
+### Infra
+| 분류 | 기술 |
+|------|------|
+| Container | Docker + Docker Compose |
+| CI/CD | Jenkins |
+| Reverse Proxy | Nginx |
+| Cloud | Oracle Cloud (예정) |
 
 ---
 
-## 📁 프로젝트 구조
+## 시스템 아키텍처
 
 ```
-PickMeUp/
-├── backend/                    # Spring Boot 백엔드
-│   └── src/main/java/com/pickmeup/
-│       ├── PickmeupApplication.java    # 앱 진입점
-│       ├── config/             # 설정
-│       │   ├── security/       # Spring Security, JWT
-│       │   ├── WebConfig.java  # CORS 설정
-│       │   └── WebSocketConfig.java
-│       ├── controller/         # REST API 컨트롤러
-│       ├── service/            # 비즈니스 로직
-│       ├── repository/         # 데이터 접근 (JPA, MongoDB)
-│       ├── domain/             # Entity (도메인 모델)
-│       │   ├── user/           # 사용자
-│       │   ├── calendar/       # 캘린더 일정
-│       │   ├── task/           # 할 일
-│       │   ├── resume/         # 이력서
-│       │   ├── job/            # 채용공고
-│       │   ├── message/        # 메시지
-│       │   └── notification/   # 알림
-│       ├── dto/                # 요청/응답 DTO
-│       ├── exception/          # 예외 처리
-│       │   ├── ErrorCode.java
-│       │   ├── BusinessException.java
-│       │   └── GlobalExceptionHandler.java
-│       └── aop/                # AOP (로깅, 성능 측정)
-│
-├── frontend/                   # React 프론트엔드
-│   └── src/
-│       ├── main.tsx            # 앱 진입점
-│       ├── App.tsx             # 라우팅 설정
-│       ├── pages/              # 페이지 컴포넌트
-│       │   ├── auth/           # 로그인, 회원가입
-│       │   ├── private/        # 인증 필요 페이지
-│       │   │   ├── DashboardPage.tsx
-│       │   │   ├── CalendarPage.tsx
-│       │   │   ├── TasksPage.tsx
-│       │   │   ├── JobsPage.tsx
-│       │   │   ├── InboxPage.tsx
-│       │   │   └── ResumeEditPage.tsx
-│       │   └── public/         # 공개 페이지
-│       │       └── ResumePage.tsx
-│       ├── components/         # 재사용 컴포넌트
-│       ├── layouts/            # 레이아웃
-│       │   ├── PrivateLayout.tsx
-│       │   └── PublicLayout.tsx
-│       ├── stores/             # Zustand 상태 관리
-│       │   └── authStore.ts
-│       ├── lib/                # 유틸리티
-│       │   ├── api.ts          # Axios 인스턴스
-│       │   └── utils.ts
-│       └── types/              # TypeScript 타입
-│           └── index.ts
-│
-├── docker/                     # Docker 설정
-│   ├── docker-compose.dev.yml  # 개발 환경
-│   └── docker-compose.prod.yml # 프로덕션 환경
-│
-├── docs/                       # 문서
-│   └── architecture.html       # 아키텍처 다이어그램
-│
-└── nginx/                      # Nginx 설정
-    └── nginx.conf
+┌─────────────────────────────────────────────────────┐
+│                    Client (Browser)                  │
+│                  React + TypeScript                  │
+└──────────────────────┬──────────────────────────────┘
+                       │ HTTPS / WebSocket
+┌──────────────────────▼──────────────────────────────┐
+│                    Nginx (Reverse Proxy)              │
+│          /api/* → :8080  |  /* → :3000              │
+└────────────┬─────────────────────────┬──────────────┘
+             │                         │
+┌────────────▼──────────┐   ┌──────────▼─────────────┐
+│   Spring Boot :8080   │   │   React Static Files   │
+│                       │   └────────────────────────┘
+│  ┌─────────────────┐  │
+│  │   Controller    │  │   External Services
+│  │   Service       │  │   ┌──────────────────────┐
+│  │   Repository    │  │──▶│  OpenAI API (GPT)    │
+│  └────────┬────────┘  │   │  Cloudinary (Upload) │
+│           │           │   │  Gmail SMTP          │
+└───────────┼───────────┘   └──────────────────────┘
+            │
+  ┌─────────┼─────────┐
+  │         │         │
+┌─▼──┐  ┌──▼──┐  ┌───▼──┐
+│MySQL│  │Redis│  │(Mongo│
+│8.0  │  │     │  │비활성)│
+└────┘  └─────┘  └──────┘
 ```
 
 ---
 
-## 🚀 시작하기
+## 서비스 플로우차트
 
-### 사전 요구사항
+### 전체 사용자 플로우
 
-- **Java 17+**
-- **Node.js 18+**
-- **Docker & Docker Compose**
+```mermaid
+flowchart TD
+    A([사용자 접속]) --> B{로그인 여부}
+    B -- 비로그인 --> C[공개 이력서 조회]
+    B -- 로그인 --> D[대시보드]
 
-### 1. 저장소 클론
+    D --> E[지원 관리]
+    D --> F[이력서 빌더]
+    D --> G[캘린더]
+    D --> H[할 일]
+    D --> I[메시지함]
 
-```bash
-git clone https://github.com/your-username/PickMeUp.git
-cd PickMeUp
+    E --> E1[지원서 등록]
+    E1 --> E2{AI 기능 사용?}
+    E2 -- Yes --> E3[예상 질문 생성]
+    E3 --> E4[모범 답변 확인]
+    E4 --> E5[내 답변 작성 → AI 피드백]
+    E2 -- No --> E6[수동 관리]
+
+    F --> F1[기본정보 입력]
+    F1 --> F2[경력/학력/스킬 추가]
+    F2 --> F3[공개 설정]
+    F3 --> F4[slug URL 공유]
+
+    C --> C1[메시지 보내기]
+    C1 --> I
+    I --> I1[답장 작성]
+    I1 --> I2[SMTP 이메일 발송]
 ```
 
-### 2. 환경 변수 설정
+### AI 질문 생성 플로우
+
+```mermaid
+flowchart TD
+    A[지원서 상세 페이지] --> B[AI 면접/자소서 질문 생성 클릭]
+    B --> C{일일 사용 횟수 체크}
+    C -- 초과 --> D[❌ 사용 한도 초과 안내]
+    C -- 가능 --> E[채용공고 URL 크롤링]
+    E --> F[회사 정보 수집]
+    F --> G[OpenAI API 호출]
+    G --> H[질문 5개 + 모범 답변 반환]
+    H --> I[DB 저장]
+    I --> J[화면에 표시]
+    J --> K{내 답변 작성}
+    K --> L[AI 피드백 요청]
+    L --> M[피드백 + 개선 답변 표시]
+```
+
+---
+
+## 시퀀스 다이어그램
+
+### JWT 인증 플로우
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Spring Boot
+    participant DB as MySQL
+    participant R as Redis
+
+    C->>S: POST /api/auth/login (email, password)
+    S->>DB: User 조회
+    DB-->>S: User 반환
+    S->>S: BCrypt 비밀번호 검증
+    S->>S: Access Token (1h) 생성
+    S->>S: Refresh Token (7d) 생성
+    S->>R: Refresh Token 저장
+    S-->>C: {accessToken, refreshToken}
+
+    C->>S: API 요청 (Authorization: Bearer {accessToken})
+    S->>S: JwtAuthenticationFilter 검증
+    S-->>C: 응답
+
+    C->>S: POST /api/auth/refresh (refreshToken)
+    S->>R: Refresh Token 검증
+    S->>S: 새 Access Token 발급
+    S-->>C: {accessToken}
+```
+
+### 이력서 메시지 수신 플로우
+
+```mermaid
+sequenceDiagram
+    participant V as 방문자
+    participant S as Spring Boot
+    participant WS as WebSocket
+    participant U as 이력서 소유자
+    participant M as SMTP
+
+    V->>S: POST /api/resume/{slug}/contact
+    S->>S: Thread 생성 or 기존 Thread 조회
+    S->>S: Message 저장
+    S->>WS: 실시간 알림 전송
+    WS-->>U: 새 메시지 알림 수신
+
+    U->>S: POST /api/messages/{threadId}/reply
+    S->>S: 답장 Message 저장
+    S->>M: @Async 이메일 발송
+    M-->>V: 이메일 수신
+    S-->>U: 답장 완료
+```
+
+### AI 질문 생성 시퀀스
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant J as JobApplicationController
+    participant JS as JobApplicationService
+    participant AI as OpenAIService
+    participant OA as OpenAI API
+    participant DB as MySQL
+
+    C->>J: POST /api/jobs/{id}/generate-questions
+    J->>JS: generateAIQuestions()
+    JS->>AI: checkAndIncrementUsage()
+    AI->>DB: AiUsage 일일 횟수 확인
+    DB-->>AI: 사용 가능
+    JS->>AI: generateQuestionsWithAnswers()
+    AI->>OA: GPT-4o-mini API 호출
+    OA-->>AI: 질문 5개 + 모범 답변 JSON
+    AI-->>JS: List<Map<question, bestAnswer>>
+    JS->>DB: ApplicationQuestion 저장
+    JS-->>J: 저장된 질문 목록
+    J-->>C: 200 OK
+```
+
+---
+
+## 도메인 객체 구조
+
+```
+com.pickmeup.domain
+│
+├── user
+│   ├── User              # 사용자 (구직자/채용담당자)
+│   ├── UserRole          # ROLE_USER, ROLE_ADMIN
+│   ├── UserType          # JOB_SEEKER, RECRUITER
+│   └── AiUsage           # 일일 AI 사용량 추적
+│
+├── job
+│   ├── JobApplication    # 지원서 (핵심 엔티티)
+│   ├── ApplicationStatus # PLANNED→APPLIED→DOCUMENT→INTERVIEW→FINAL→ACCEPTED/REJECTED
+│   ├── JobType           # FULL_TIME, PART_TIME, INTERN, CONTRACT
+│   ├── ApplicationQuestion   # AI 생성 예상 질문
+│   ├── JobApplicationQna     # 자소서 문항 (질문+내용)
+│   ├── JobApplicationFile    # 첨부 파일 (Cloudinary)
+│   ├── JobApplicationEvent   # 지원 이벤트 히스토리
+│   ├── InterviewRecord       # 면접 기록
+│   └── AIUsageLog            # AI 사용 로그
+│
+├── resume
+│   ├── Resume            # 이력서 (공개 URL 포함)
+│   ├── Experience        # 경력
+│   ├── Education         # 학력
+│   ├── Project           # 프로젝트
+│   ├── Skill             # 기술 스택
+│   ├── Certificate       # 자격증
+│   ├── Award             # 수상
+│   ├── Language          # 어학
+│   ├── CoverLetter       # 자기소개서
+│   └── PortfolioFile     # 포트폴리오 파일
+│
+├── message
+│   ├── Thread            # 메시지 스레드 (발신자-소유자)
+│   ├── Message           # 개별 메시지
+│   ├── MessageDirection  # INBOUND(수신) / OUTBOUND(발신)
+│   ├── ThreadStatus      # UNREAD, READ, REPLIED
+│   └── MessageRaw        # 원본 메시지 + IP/UA 메타데이터
+│
+├── calendar
+│   ├── CalendarEvent     # 일정 (면접, 과제 등)
+│   └── RecurrenceType    # NONE, DAILY, WEEKLY, MONTHLY
+│
+├── task
+│   ├── Task              # 할 일
+│   ├── TaskStatus        # TODO, IN_PROGRESS, DONE
+│   └── TaskPriority      # LOW, MEDIUM, HIGH
+│
+├── notification
+│   ├── NotificationJob   # 발송 예약 작업
+│   ├── NotificationLog   # 발송 결과 로그
+│   └── NotificationChannel # EMAIL, KAKAO, SMS, WEB_PUSH
+│
+└── recruiter
+    └── ContactProposal   # 채용 담당자 면접 제안
+```
+
+**도메인 간 주요 관계:**
+```
+User ──1:N──▶ JobApplication
+User ──1:1──▶ Resume
+Resume ──1:N──▶ Experience, Education, Project, Skill ...
+JobApplication ──1:N──▶ ApplicationQuestion, JobApplicationQna, InterviewRecord
+Thread ──1:N──▶ Message
+User(owner) ──1:N──▶ Thread
+```
+
+---
+
+## DB 스키마 구조
+
+### 핵심 테이블
+
+```sql
+-- 사용자
+users
+  id, email, password, name, phone, profile_image_url
+  user_role, user_type, created_at, updated_at
+
+-- 지원서
+job_applications
+  id, user_id(FK), company_name, position, job_type
+  status, applied_date, deadline
+  job_url, job_description, company_info, required_skills
+  salary_min, salary_max, location, memo
+  created_at, updated_at
+
+-- 지원 예상 질문 (AI 생성)
+application_questions
+  id, job_application_id(FK), question, best_answer
+  my_answer, ai_feedback, question_type(DOCUMENT/INTERVIEW)
+  created_at
+
+-- 이력서
+resumes
+  id, user_id(FK), title, slug(UNIQUE)
+  is_public, resume_type, layout_type
+  summary, desired_position, desired_salary
+  created_at, updated_at
+
+-- 메시지 스레드
+threads
+  id, owner_id(FK), sender_name, sender_email
+  subject, status, message_count
+  is_starred, is_archived, created_at
+
+-- 메시지
+messages
+  id, thread_id(FK), content, direction
+  is_read, created_at
+
+-- 캘린더 이벤트
+calendar_events
+  id, user_id(FK), job_application_id(FK nullable)
+  title, description, start_time, end_time
+  recurrence_type, created_at
+
+-- 할 일
+tasks
+  id, user_id(FK), title, description
+  status, priority, due_date, created_at
+
+-- AI 일일 사용량
+ai_usage
+  id, user_id(FK), usage_date
+  question_count, feedback_count
+```
+
+### 관계도 요약
+```
+users ──┬──▶ job_applications ──▶ application_questions
+        ├──▶ resumes ──▶ experiences, educations, projects, skills ...
+        ├──▶ threads ──▶ messages
+        ├──▶ calendar_events
+        ├──▶ tasks
+        └──▶ ai_usage
+```
+
+---
+
+## 브랜치 전략
+
+```
+main
+ └── 배포용. PR + 리뷰 후 병합. 직접 push 금지
+
+develop
+ └── 통합 개발 브랜치. feature 브랜치 병합 대상
+
+feature/{기능명}
+ └── 새 기능 개발
+ └── 예: feature/ai-interview, feature/resume-builder
+
+fix/{버그명}
+ └── 버그 수정
+ └── 예: fix/profile-upload-500, fix/jwt-refresh
+
+hotfix/{이슈명}
+ └── 운영 긴급 수정 (main에서 분기)
+ └── 예: hotfix/login-auth-error
+```
+
+**플로우:**
+```
+feature/* ──PR──▶ develop ──PR──▶ main
+                                   │
+hotfix/* ────────────────────PR──▶ main
+                                   │
+                              Jenkins CI/CD
+                                   │
+                              Oracle Cloud 배포
+```
+
+**커밋 컨벤션:**
+```
+feat: 새 기능 추가
+fix: 버그 수정
+refactor: 코드 리팩토링
+docs: 문서 수정
+chore: 빌드/설정 변경
+style: 코드 포맷팅
+```
+
+---
+
+## 환경 설정
+
+`.env.example`을 복사해서 `.env` 생성 후 값 입력:
 
 ```bash
 cp .env.example .env
 ```
 
-`.env` 파일 수정:
-```env
-# Database
-MYSQL_HOST=localhost
-MYSQL_PORT=3307
-MYSQL_DATABASE=pickmeup
-MYSQL_USER=pickmeup
-MYSQL_PASSWORD=pickmeup123
+| 변수 | 설명 | 필수 |
+|------|------|------|
+| `JWT_SECRET` | JWT 서명 키 (32자 이상) | ✅ |
+| `DB_URL` | MySQL 접속 URL | ✅ |
+| `DB_USERNAME` / `DB_PASSWORD` | DB 계정 | ✅ |
+| `REDIS_HOST` / `REDIS_PORT` | Redis 접속 정보 | ✅ |
+| `OPENAI_API_KEY` | OpenAI API 키 | AI 기능 사용 시 |
+| `CLOUDINARY_*` | 파일 업로드 키 | 이미지 업로드 시 |
+| `MAIL_USERNAME` / `MAIL_PASSWORD` | Gmail 앱 비밀번호 | 메일 발송 시 |
 
-# MongoDB
-MONGODB_HOST=localhost
-MONGODB_PORT=27017
+---
 
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
+## 실행 방법
 
-# JWT
-JWT_SECRET=your-super-secret-key-at-least-256-bits
-
-# OpenAI (AI 기능)
-OPENAI_API_KEY=sk-your-openai-api-key
-
-# 카카오톡 알림 (선택)
-KAKAO_SENDER_KEY=your-kakao-sender-key
-KAKAO_NOTIFICATION_ENABLED=false
-
-# SMS 알림 (선택 - NCP SENS)
-NCP_SENS_SERVICE_ID=your-service-id
-NCP_SENS_ACCESS_KEY=your-access-key
-NCP_SENS_SECRET_KEY=your-secret-key
-NCP_SENS_FROM_NUMBER=01012345678
-NCP_SENS_ENABLED=false
-
-# SMTP 이메일 (선택)
-MAIL_USERNAME=your-email@gmail.com
-MAIL_PASSWORD=your-app-password
-MAIL_ENABLED=false
-```
-
-### 3. Docker로 인프라 실행
+### 로컬 개발
 
 ```bash
-cd docker
-docker-compose -f docker-compose.dev.yml up -d
-```
+# 1. Docker로 DB/Redis 실행
+docker-compose -f docker/docker-compose.dev.yml up -d
 
-실행되는 서비스:
-- **MySQL**: localhost:3307
-- **MongoDB**: localhost:27017
-- **Redis**: localhost:6379
-
-### 4. Backend 실행
-
-```bash
+# 2. 백엔드 실행 (IntelliJ 또는)
 cd backend
 ./gradlew bootRun
-```
 
-- 서버: http://localhost:8080
-- Swagger: http://localhost:8080/swagger-ui.html
-
-### 5. Frontend 실행
-
-```bash
+# 3. 프론트엔드 실행
 cd frontend
 npm install
 npm run dev
 ```
 
-- 앱: http://localhost:3000
+### 프로덕션 빌드
 
----
-
-## 🏗 아키텍처
-
-### 전체 아키텍처
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                       Client (Browser)                       │
-│                    React + TypeScript                        │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     Vite Dev Server                          │
-│              (Proxy: /api → Backend:8080)                    │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Spring Boot Backend                       │
-│                                                              │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │Controller│→│ Service  │→│Repository│→│ Database │    │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
-│                                                              │
-│  ┌────────────────────────────────────────────────────┐     │
-│  │              Security Filter Chain                  │     │
-│  │  Request → JwtFilter → Auth → Controller → Response │     │
-│  └────────────────────────────────────────────────────┘     │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                        Data Layer                            │
-│                                                              │
-│    ┌─────────┐      ┌─────────┐      ┌─────────┐           │
-│    │  MySQL  │      │ MongoDB │      │  Redis  │           │
-│    │  :3307  │      │ :27017  │      │  :6379  │           │
-│    └─────────┘      └─────────┘      └─────────┘           │
-│    (메인 DB)        (AI 대화)         (캐싱)                │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Backend 계층 구조
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Controller Layer                        │
-│   HTTP 요청 수신 → 파라미터 검증 → Service 호출 → 응답 반환   │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                       Service Layer                          │
-│        비즈니스 로직 → 트랜잭션 관리 → DTO ↔ Entity 변환      │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      Repository Layer                        │
-│            JPA Repository → 쿼리 메서드 → DB 접근            │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                       Domain Layer                           │
-│              Entity (JPA) → DB 테이블 매핑                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 인증 흐름
-
-```
-[회원가입/로그인]
-Client → POST /api/auth/login → AuthController → AuthService
-                                                      │
-                                    ┌─────────────────┴─────────────────┐
-                                    ▼                                   ▼
-                              비밀번호 검증                      JWT 토큰 생성
-                              (BCrypt)                     (Access + Refresh)
-                                    │                                   │
-                                    └─────────────────┬─────────────────┘
-                                                      ▼
-                                              Response (Token)
-
-[API 호출]
-Client → GET /api/tasks + Header: "Authorization: Bearer {token}"
-              │
-              ▼
-    JwtAuthenticationFilter
-              │
-              ├─ 토큰 추출 ("Bearer " 제거)
-              ├─ 토큰 검증 (서명, 만료)
-              ├─ userId 추출
-              ├─ User 조회
-              └─ SecurityContext에 저장
-              │
-              ▼
-        Controller (@CurrentUser User user)
+```bash
+docker-compose -f docker/docker-compose.prod.yml up -d
 ```
 
 ---
 
-## 📖 API 문서
-
-### Swagger UI
-
-서버 실행 후 접속: http://localhost:8080/swagger-ui.html
-
-### 주요 API
-
-#### 인증
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| POST | `/api/auth/signup` | 회원가입 |
-| POST | `/api/auth/login` | 로그인 |
-| POST | `/api/auth/refresh` | 토큰 갱신 |
-
-#### 캘린더
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| GET | `/api/calendar/events` | 일정 목록 조회 |
-| POST | `/api/calendar/events` | 일정 생성 |
-| PUT | `/api/calendar/events/{id}` | 일정 수정 |
-| DELETE | `/api/calendar/events/{id}` | 일정 삭제 |
-
-#### 할 일
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| GET | `/api/tasks` | 할 일 목록 |
-| POST | `/api/tasks` | 할 일 생성 |
-| PUT | `/api/tasks/{id}` | 할 일 수정 |
-| PATCH | `/api/tasks/{id}/status` | 상태 변경 |
-| DELETE | `/api/tasks/{id}` | 할 일 삭제 |
-
-#### 이력서
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| GET | `/api/resume` | 내 이력서 조회 |
-| PUT | `/api/resume` | 이력서 수정 |
-| GET | `/api/resume/public/{slug}` | 공개 이력서 조회 |
-
-#### 채용공고
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| GET | `/api/jobs` | 채용공고 목록 |
-| POST | `/api/jobs` | 채용공고 등록 |
-| GET | `/api/jobs/statistics` | **📊 취업 활동 통계** |
-| POST | `/api/jobs/{id}/parse` | URL 자동 파싱 |
-| POST | `/api/jobs/{id}/interview-prep` | AI 면접 준비 |
-
-#### 메시지
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| GET | `/api/messages/threads` | 메시지 스레드 목록 |
-| GET | `/api/messages/threads/{id}` | 스레드 상세 |
-| POST | `/api/messages/threads/{id}/reply` | **✉️ 답장 (HTML 이메일)** |
-
-#### 헤드헌터 (신규!)
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| GET | `/api/recruiter/feed` | **👉 이력서 스와이프 피드** |
-| POST | `/api/recruiter/pick/{resumeId}` | **❤️ 이력서 Pick** |
-| GET | `/api/recruiter/picks` | 내가 픽한 사람들 |
-| POST | `/api/recruiter/proposal/{resumeId}` | **📧 컨택 제안 보내기** |
-| GET | `/api/recruiter/proposals` | 내가 보낸 제안 목록 |
-| GET | `/api/recruiter/statistics` | 헤드헌터 통계 |
-
-#### 제안 (구직자용)
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| GET | `/api/proposals` | **받은 면접 제안** |
-| POST | `/api/proposals/{id}/accept` | 제안 수락 |
-| POST | `/api/proposals/{id}/reject` | 제안 거절 |
-| GET | `/api/proposals/pick-stats` | **내 이력서 픽 통계** |
-
----
-
-## 📝 라이선스
-
-MIT License
-
----
-
-## 👨‍💻 개발자
-
-**순대왕자** - [GitHub](https://github.com/your-username)
+> 📬 문의 및 피드백은 이슈를 통해 남겨주세요.

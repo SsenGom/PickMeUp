@@ -29,8 +29,9 @@ spring:
       mode: always  # 항상 data.sql 실행 (프로덕션에서는 never로 변경!)
 
   data:
-    mongodb:
-      uri: ${MONGODB_URI:mongodb://localhost:27017/pickmeup}
+    # MongoDB: 비활성화 (mysql로 이전)
+    # mongodb:
+    #   uri: ${MONGODB_URI:mongodb://localhost:27017/pickmeup}
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
@@ -46,6 +47,11 @@ spring:
           auth: true
           starttls:
             enable: true
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+  api-key: ${CLOUDINARY_API_KEY:}
+  api-secret: ${CLOUDINARY_API_SECRET:}
 
 file:
   upload-dir: ${FILE_UPLOAD_DIR:./uploads}
@@ -86,7 +92,7 @@ serpapi:
   api-key: ${SERPAPI_API_KEY:}
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:8082}
 
 logging:
   level:

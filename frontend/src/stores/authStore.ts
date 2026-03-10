@@ -42,10 +42,12 @@ interface AuthState {
   accessToken: string | null     // API 호출용 토큰
   refreshToken: string | null    // 토큰 갱신용 토큰
   isAuthenticated: boolean       // 로그인 여부
+  unreadMessageCount: number     // 읽지 않은 메시지 수
   
   // ===== Actions (상태 변경 함수) =====
   setAuth: (user: User, accessToken: string, refreshToken: string) => void  // 로그인
   logout: () => void             // 로그아웃
+  setUnreadMessageCount: (count: number) => void  // 읽지 않은 메시지 수 설정
 }
 
 /**
@@ -75,6 +77,7 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
+      unreadMessageCount: 0,
       
       /**
        * 로그인 - 인증 정보 저장
@@ -100,8 +103,15 @@ export const useAuthStore = create<AuthState>()(
           user: null, 
           accessToken: null, 
           refreshToken: null, 
-          isAuthenticated: false 
+          isAuthenticated: false,
+          unreadMessageCount: 0
         }),
+      
+      /**
+       * 읽지 않은 메시지 수 설정
+       */
+      setUnreadMessageCount: (count) =>
+        set({ unreadMessageCount: count }),
     }),
     {
       name: 'auth-storage',  // localStorage 키 이름
