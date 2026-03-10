@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * PickMeUp 애플리케이션 시작점 (Entry Point)
- * 
+ * ㅇㅇSSdfdfd
  * Spring Boot 애플리케이션은 이 main() 메서드에서 시작됨
  */
 @SpringBootApplication(exclude = {
