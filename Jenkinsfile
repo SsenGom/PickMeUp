@@ -17,21 +17,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Frontend Build') {
-            when {
-                anyOf {
-                    branch 'develop'
-                    branch 'master'
-                }
-            }
-            steps {
-                dir('frontend') {
-                    sh 'npm ci'
-                    sh 'npm run build'
-                }
-            }
-        }
     }
 
     post {
