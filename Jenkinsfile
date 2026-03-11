@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        jdk 'JDK17'
-        nodejs 'NodeJS18'
-    }
-
     stages {
         stage('Checkout') {
             steps {
