@@ -30,7 +30,7 @@ spring:
 
   data:
     # MongoDB: 비활성화 (mysql로 이전)
-    # mongodb: //
+    # mongodb: ss
     #   uri: ${MONGODB_URI:mongodb://localhost:27017/pickmeup}
     redis:
       host: ${REDIS_HOST:localhost}
